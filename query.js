@@ -2,9 +2,9 @@ const ObjectID = require('mongodb').ObjectID;
 
 class Query {
     constructor() { this.query = {} }
-    addParam(prop, val) {
+    addParam(prop, val, isObjectId = false) {
         if (prop && val) {
-        this.query[prop] = (prop === '_id') ? new ObjectID(val) : val;
+            this.query[prop] = (prop === '_id' || isObjectId) ? new ObjectID(val) : val;
         }
     }
     get obj() { return this.query; }

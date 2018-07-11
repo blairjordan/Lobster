@@ -5,7 +5,6 @@ const Query = require("../query");
 
 router.get('/', function(req, res, next) {
     const { id } = req.query;
-
     let q = new Query();
     q.addParam('_id', id);
 
