@@ -5,6 +5,12 @@
     "database" : "lobster",
     "server" : "localhost",
     "port" : 27017,
-    "options" : {}
+    "option" : {
+      "numberOfRetries" : 5,
+      "auto_reconnect": true,
+      "poolSize" : 40,
+      "connectTimeoutMS": 30000,
+      "useNewUrlParser": true
+    }
   }
 }
