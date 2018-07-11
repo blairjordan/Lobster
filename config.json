@@ -1,0 +1,10 @@
+{
+  "db" : {
+    "user" : "",
+    "password" : "",
+    "database" : "lobster",
+    "server" : "localhost",
+    "port" : 27017,
+    "options" : {}
+  }
+}
