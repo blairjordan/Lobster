@@ -1,8 +1,23 @@
+
 # Lobster
 
-npm install
+## Getting started
+ 
+Clone this repository
 
-npm start
+    git clone https://github.com/blairjordan/Lobster.git
 
-Create the DB:
-docker run -p 27017:27017 --name lobsterdb -d mongo
+From the Lobster directory, run:
+
+    npm install
+    
+Start the application:      
+    
+    npm start
+
+**Database**
+
+The easiest way to create the database is to run MongoDB within a Docker container:
+
+    docker run -p 27017:27017 --name lobsterdb -d mongo
+
