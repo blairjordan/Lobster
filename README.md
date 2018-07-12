@@ -1,8 +1,12 @@
 
 # Lobster
 
+An API for lobby, inventory and in-game economy.
+
+![](images/logo.png?raw=true)
+
 ## Getting started
- 
+
 Clone this repository
 
     git clone https://github.com/blairjordan/Lobster.git
