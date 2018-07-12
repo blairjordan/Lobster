@@ -1,9 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var MongoPool = require("../mongo-pool");
-const Query = require("../query");
-const ObjectID = require('mongodb').ObjectID;
-
+const Params = require("../params");
 
 router.get('/', function(req, res, next) {
     MongoPool.getInstance(function (db) {
@@ -18,12 +16,12 @@ router.get('/', function(req, res, next) {
 router.get('/player', function(req, res, next) {
     const { game_id, player_id } = req.query;
     
-    let selectorQuery = new Query();
-    selectorQuery.addParam('_id', game_id, true);
-    selectorQuery.addParam('players.player_id', player_id, true);
+    let selectorParams = new Params();
+    selectorParams.addParam('_id', game_id, true);
+    selectorParams.addParam('players.player_id', player_id, true);
 
     MongoPool.getInstance(function (db) {
-        db.collection('games').findOne(selectorQuery.obj, function(err, game) {
+        db.collection('games').findOne(selectorParams.obj, function(err, game) {
             if (err) throw err;
             res.json(game.players.find( obj => obj.player_id.toString() === `${player_id}`));
         });
@@ -34,18 +32,18 @@ router.get('/player', function(req, res, next) {
 router.get('/add_player', function(req, res, next) {
     const { game_id, player_id } = req.query;
     
-    let selectorQuery = new Query();
-    selectorQuery.addParam('_id', game_id, true);
+    let selectorParams = new Params();
+    selectorParams.addParam('_id', game_id, true);
 
-    let updateQuery = new Query();
-    updateQuery.addParam('player_id', player_id, true);
-    updateQuery.addParam('last_active', new Date());
+    let updateParams = new Params();
+    updateParams.addParam('player_id', player_id, true);
+    updateParams.addParam('last_active', new Date());
     
     MongoPool.getInstance(function (db) {
         db.collection('games')
         .update(
-            selectorQuery.obj, 
-            {$push: { 'players' : updateQuery.obj} },
+            selectorParams.obj, 
+            {$push: { 'players' : updateParams.obj} },
             function(err, result) {
                 if (err) throw err;
                 res.json(result);
@@ -57,22 +55,22 @@ router.get('/add_player', function(req, res, next) {
 router.get('/update_player', function(req, res, next) {
     const { game_id, player_id, x, y, z } = req.query;
     
-    let selectorQuery = new Query();
-    selectorQuery.addParam('_id', game_id, true);
-    selectorQuery.addParam('players.player_id', player_id, true);
+    let selectorParams = new Params();
+    selectorParams.addParam('_id', game_id, true);
+    selectorParams.addParam('players.player_id', player_id, true);
 
-    let updateQuery = new Query();
-    updateQuery.addParam('player_id', player_id, true);
-    updateQuery.addParam('x', x);
-    updateQuery.addParam('y', y);
-    updateQuery.addParam('z', z);
-    updateQuery.addParam('timestamp', new Date());
+    let updateParams = new Params();
+    updateParams.addParam('player_id', player_id, true);
+    updateParams.addParam('x', x);
+    updateParams.addParam('y', y);
+    updateParams.addParam('z', z);
+    updateParams.addParam('timestamp', new Date());
     
     MongoPool.getInstance(function (db) {
         db.collection('games')
         .update(
-            selectorQuery.obj, 
-            {$set: { 'players.$' : updateQuery.obj} },
+            selectorParams.obj, 
+            {$set: { 'players.$' : updateParams.obj} },
             function(err, result) {
                 if (err) throw err;
                 res.json(result);
