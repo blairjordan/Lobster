@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var MongoPool = require("../mongo-pool");
 const Query = require("../query");
+const ObjectID = require('mongodb').ObjectID;
+
 
 router.get('/', function(req, res, next) {
     MongoPool.getInstance(function (db) {
@@ -23,7 +25,7 @@ router.get('/player', function(req, res, next) {
     MongoPool.getInstance(function (db) {
         db.collection('games').findOne(selectorQuery.obj, function(err, game) {
             if (err) throw err;
-            res.json(game.players.find( obj => { return obj.player_id = player_id }));
+            res.json(game.players.find( obj => obj.player_id.toString() === `${player_id}`));
         });
     });
 });
