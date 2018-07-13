@@ -6,7 +6,7 @@ function MongoPool(){}
 var p_db;
 
 function initPool(cb){
-  MongoClient.connect(`mongodb://${config.db.server}:${config.db.port}`, config.db.option, function(err, db) {
+  MongoClient.connect(process.env.MONGODB_URI || `mongodb://${config.db.server}:${config.db.port}`, config.db.option, function(err, db) {
     if (err) throw err;
 
     p_db = db;
