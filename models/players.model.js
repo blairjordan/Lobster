@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const PlayerSchema = mongoose.Schema({
-  name: String
+  name: {type: String, required: true, unique: true, index: true}
 }, {collection : 'player'});
 
 let PlayersModel = mongoose.model('player', PlayerSchema);

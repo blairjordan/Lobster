@@ -10,9 +10,9 @@ const GameSchema = mongoose.Schema({
                 ref: 'player'
             },
             last_updated: { type: Date, default: Date.now },
-            x: Number, 
-            y: Number, 
-            z: Number
+            x: { type: Number, required: true }, 
+            y: { type: Number, required: true }, 
+            z: { type: Number, required: true }
         }
     ]
 }, {collection : 'game'});
