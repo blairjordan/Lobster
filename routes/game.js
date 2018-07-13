@@ -31,7 +31,7 @@ router.get('/create', function(req, res, next) {
     });
 });
 
-// http://localhost:3000/game/update_player?game_id=GAMEID&player_id=PLAYERID
+// http://localhost:3000/game/player?game_id=GAMEID&player_id=PLAYERID
 router.get('/player', function(req, res, next) {
     const { game_id, player_id } = req.query;
     
