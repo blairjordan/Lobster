@@ -12,6 +12,25 @@ router.get('/', function(req, res, next) {
     });
 });
 
+// http://localhost:3000/game/create?name=GAMENAME
+router.get('/create', function(req, res, next) {
+    const { name } = req.query;
+
+    let insertParams = new Params();
+    insertParams.generateID();
+    insertParams.addParam('name', name);
+
+    MongoPool.getInstance(function (db) {
+        db.collection('games')
+        .insertOne(
+            insertParams.obj,
+            function(err, result) {
+                if (err) throw err;
+                res.json(result);
+        });
+    });
+});
+
 // http://localhost:3000/game/update_player?game_id=GAMEID&player_id=PLAYERID
 router.get('/player', function(req, res, next) {
     const { game_id, player_id } = req.query;
