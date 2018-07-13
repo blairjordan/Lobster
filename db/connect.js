@@ -5,9 +5,8 @@ import config from '../core/config/config.dev';
 Mongoose.Promise = global.Promise;
 
 const connectToDb = async () => {
-    let dbHost = config.dbHost;
-    let dbPort = config.dbPort;
-    let dbName = config.dbName;
+    const { dbHost, dbPort, dbName } = config;
+    
     try {
         await Mongoose.connect(process.env.MONGODB_URI || `mongodb://${dbHost}:${dbPort}/${dbName}`, { useMongoClient: true });
         logger.info('Connected to mongo!!!');
