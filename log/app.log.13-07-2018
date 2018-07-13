@@ -1,0 +1,5 @@
+{"level":"info","message":"server started -  3000","timestamp":"2018-07-13T15:00:27.771Z"}
+{"level":"info","message":"Connected to mongo!!!","timestamp":"2018-07-13T15:00:27.812Z"}
+{"level":"info","message":"\u001b[0mDELETE /players/add \u001b[33m404 \u001b[0m1.477 ms - 27\u001b[0m\n","timestamp":"2018-07-13T15:00:36.669Z"}
+{"level":"info","message":"Adding player...","timestamp":"2018-07-13T15:00:41.543Z"}
+{"level":"info","message":"\u001b[0mPOST /players/add \u001b[32m200 \u001b[0m16.953 ms - 66\u001b[0m\n","timestamp":"2018-07-13T15:00:41.547Z"}
