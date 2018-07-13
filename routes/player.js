@@ -3,10 +3,13 @@ const router = express.Router();
 const MongoPool = require("../mongo-pool");
 const Params = require("../params");
 
+// http://localhost:3000/player?name=PLAYERNAME
+// http://localhost:3000/player?id=PLAYERID
 router.get('/', function(req, res, next) {
-    const { id } = req.query;
+    const { id, name } = req.query;
     let selectorParams = new Params();
-    selectorParams.addParam('_id', id);
+    selectorParams.addParam('_id', id, true);
+    selectorParams.addParam('name', name);
 
     MongoPool.getInstance(function (db){
         db.collection('players').find(selectorParams.obj).toArray(function(err, result) {
