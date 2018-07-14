@@ -18,6 +18,10 @@ router.post('/add_player', (req, res) => {
     gameController.addPlayer(req, res);
 });
 
+router.delete('/remove_player', (req, res) => {
+    gameController.removePlayer(req, res);
+});
+
 router.post('/update_player', (req, res) => {
     gameController.updatePlayer(req, res);
 });
