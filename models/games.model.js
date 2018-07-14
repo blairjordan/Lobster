@@ -33,37 +33,36 @@ GamesModel.removeGame = name => {
 
 GamesModel.addPlayer = (gameName, playerName) => {
     PlayersModel.findOne({name: playerName}, function(err,player) {
-        if (player) {
-            GamesModel.findOneAndUpdate({name:gameName}, 
-                { $push: {'players':  player } },
-                {  
-                    projection: { players: { '$elemMatch': { _id: player._id} } },
-                    returnNewDocument: true
-                },
-                (err, game) => {
-                    if (err) throw err;
-                    return game;
-                }
-            );
-        } // else error
-    });
-};
-
-GamesModel.updatePlayer = (gameName, playerName, x, y, z) => {
-    PlayersModel.findOne({name: playerName}, function(err,player) {
-        if (player) {
-            GamesModel.findOneAndUpdate({name:gameName, 'players._id': player._id }, 
-            { $set: { 'players.$' : { _id: player._id, x, y, z } } },
+        if (!player) throw err;
+        if (err) throw err;
+        GamesModel.findOneAndUpdate({name:gameName}, 
+            { $push: {'players':  player } },
             {  
                 projection: { players: { '$elemMatch': { _id: player._id} } },
                 returnNewDocument: true
             },
-            function(err, player) {
-                console.log(player);
+            (err, game) => {
                 if (err) throw err;
-                return player;
-            });
-        } // else error
+                return game;
+            }
+        );
+    });
+};
+
+GamesModel.updatePlayer = (gameName, playerName, x, y, z) => {
+    PlayersModel.findOne({name: playerName}, (err,player) => {
+        if (!player) throw err;
+        if (err) throw err;
+        GamesModel.findOneAndUpdate({name:gameName, 'players._id': player._id }, 
+        { $set: { 'players.$' : { _id: player._id, x, y, z } } },
+        {  
+            projection: { players: { '$elemMatch': { _id: player._id} } },
+            returnNewDocument: true
+        },
+        (err, game) => {
+            if (err) throw err;
+            return game;
+        });
     });
 };
 

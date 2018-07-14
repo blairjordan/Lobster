@@ -6,12 +6,12 @@ const controller = {};
 controller.getAll = async (req, res) => {
     try {
         const players = await Player.getAll();
-        logger.info('sending all games...');
+        logger.info('Sending all games');
         res.send(players);
     }
     catch(err) {
-        logger.error('Error in getting players- ' + err);
-        res.send('Got error in getAll');
+        logger.error('Error getting all players - ' + err);
+        res.status(500).json(err);
     }
 };
 
@@ -20,12 +20,12 @@ controller.addPlayer = async (req, res) => {
     let playerToAdd = Player({ name });
     try {
         const savedPlayer = await Player.addPlayer(playerToAdd);
-        logger.info('Adding player...');
-        res.send('added: ' + savedPlayer);
+        logger.info('Adding player');
+        res.json(savedPlayer);
     }
     catch(err) {
-        logger.error('Error in getting players- ' + err);
-        res.send('Got error in getAll');
+        logger.error('Error in getting players - ' + err);
+        res.status(500).json(err);
     }
 };
 
@@ -37,8 +37,8 @@ controller.deletePlayer = async (req, res) => {
         res.send('Player successfully deleted');
     }
     catch(err) {
-        logger.error('Failed to delete player- ' + err);
-        res.send('Delete failed..!');
+        logger.error('Failed to delete player - ' + err);
+        res.status(500).json(err);
     }
 };
 

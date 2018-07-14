@@ -8,11 +8,10 @@ controller.getAll = async (req, res) => {
     try {
         const games = await Game.getAll();
         logger.info('sending all games...');
-        res.send(games);
+        res.status(200).json(games);
     }
     catch(err) {
-        logger.error('Error in getting games- ' + err);
-        res.send('Got error in getAll');
+        res.status(500).json(err);
     }
 };
 
@@ -22,12 +21,11 @@ controller.addGame = async (req, res) => {
     });
     try {
         const savedGame = await Game.addGame(gameToAdd);
-        logger.info('Adding game...');
-        res.send('added: ' + savedGame);
+        logger.info('Adding game');
+        res.status(200).json(savedGame);
     }
     catch(err) {
-        logger.error('Error in getting games- ' + err);
-        res.send('Got error in getAll');
+        res.status(500).json(err);
     }
 };
 
@@ -35,12 +33,11 @@ controller.deleteGame = async (req, res) => {
     let gameName = req.body.name;
     try{
         const removedGame = await Game.removeGame(gameName);
-        logger.info('Deleted Game- ' + removedGame);
-        res.send('Game successfully deleted');
+        logger.info('Deleted game ' + removedGame);
+        res.status(200).json(removedGame);
     }
     catch(err) {
-        logger.error('Failed to delete game- ' + err);
-        res.send('Delete failed..!');
+        res.status(500).json(err);
     }
 };
 
@@ -49,12 +46,11 @@ controller.addPlayer = async (req, res) => {
 
     try{
         const addedPlayer = await Game.addPlayer(game_name,player_name);
-        logger.info('Added player - ' + addedPlayer);
-        res.send('Player successfully added');
+        logger.info('Added player ' + addedPlayer);
+        res.status(200).json(addedPlayer);
     }
     catch(err) {
-        logger.error('Failed to add player - ' + err);
-        res.send('Add failed..!');
+        res.status(500).json(err);
     }
 };
 
@@ -62,13 +58,11 @@ controller.updatePlayer = async (req, res) => {
     const { game_name, player_name, x, y, z } = req.body;
 
     try{
-        const removedGame = await Game.updatePlayer(game_name,player_name,x,y,z);
-        logger.info('Update player - ' + removedGame);
-        res.send('Player successfully updated');
+        const updatedGame = await Game.updatePlayer(game_name,player_name,x,y,z);
+        res.status(200).json(updatedGame);
     }
     catch(err) {
-        logger.error('Failed to update player - ' + err);
-        res.send('Update failed..!');
+        res.status(500).json(err);
     }
 };
 
