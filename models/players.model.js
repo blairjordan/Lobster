@@ -14,16 +14,6 @@ PlayersModel.addPlayer= playerToAdd => {
   return playerToAdd.save();
 };
 
-PlayersModel.findPlayer = name => {
-  PlayersModel.find(
-    {name},
-    function(err, model) {
-        if (err) throw err;
-        return model;
-    }
-  );
-};
-
 PlayersModel.removePlayer = name => {
   return PlayersModel.remove({ name });
 };
