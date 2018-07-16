@@ -4,58 +4,57 @@ import logger from '../core/logger/app-logger';
 const controller = {};
 
 controller.getAll = async (req, res) => {
-    try {
-        const players = await Player.getAll();
+    const players = Player.getAll((err, players) => {
+        if (err) {
+            logger.error('Error getting all players - ' + err);
+            res.status(500).json(err);
+            return;
+        }
+
         logger.info('Sending all games');
-        res.send(players);
-    }
-    catch(err) {
-        logger.error('Error getting all players - ' + err);
-        res.status(500).json(err);
-    }
+        res.json(players);
+    });
 };
 
 controller.addPlayer = async (req, res) => {
     const { name } = req.body;
-    let playerToAdd = Player({ name });
-    try {
-        const savedPlayer = await Player.addPlayer(playerToAdd);
-        logger.info('Adding player');
-        res.json(savedPlayer);
-    }
-    catch(err) {
-        logger.error('Error in getting players - ' + err);
-        res.status(500).json(err);
-    }
+    let playerToAdd = new Player( { name } );
+    Player.addPlayer(playerToAdd, (err, playerAdded) => {
+        if (err) {
+            logger.error('Error adding player - ' + err);
+            res.status(500).json(err);
+            return;
+        }
+        logger.info('New player added');
+        res.json(playerAdded);
+    });
 };
 
-controller.deletePlayer = async (req, res) => {
+controller.removePlayer = async (req, res) => {
     const { name } = req.body;
-    try{
-        const removedPlayer = await Player.removePlayer(name);
-        logger.info('Deleted player- ' + removedPlayer);
-        res.send('Player successfully deleted');
-    }
-    catch(err) {
-        logger.error('Failed to delete player - ' + err);
-        res.status(500).json(err);
-    }
+    Player.removePlayer(name, (err, playerRemoved) => {
+        if (err || playerRemoved == null) {
+            logger.error(`Error removing player ${name}: ${err}`);
+            res.status(500).json(err || {message: 'Player name not found', name: 'PlayerNotFound'});
+            return;
+        }
+        logger.info('Player removed');
+        res.json(playerRemoved);
+    });
 };
 
-/*
 controller.updatePlayer = async (req, res) => {
-    const { name } = req.body;
-
-    try{
-        const updatedPlayer = await Game.updatePlayer(name);
-        logger.info('Update player - ' + updatedPlayer);
-        res.send('Player successfully updated');
-    }
-    catch(err) {
-        logger.error('Failed to update player - ' + err);
-        res.send('Update failed..!');
-    }
+    const { name, x, y, z } = req.body;
+    Player.updatePlayer({ name, x, y, z },
+    (err, playerupdated) => {
+        if (err || playerupdated == null) {
+            logger.error(`Error updating player ${name}: ${err}`);
+            res.status(500).json(err || {message: 'Player name not found', name: 'PlayerNotFound'});
+            return;
+        }
+        logger.info('Player updated');
+        res.json(playerupdated);
+    });
 };
-*/
 
 export default controller;

@@ -10,14 +10,12 @@ router.post('/add', (req, res) => {
   playerController.addPlayer(req, res);
 });
 
-router.delete('/delete', (req, res) => {
-  playerController.deletePlayer(req, res);
+router.delete('/remove', (req, res) => {
+  playerController.removePlayer(req, res);
 });
 
-/*
-router.post('/update_player', (req, res) => {
+router.patch('/update_player', (req, res) => {
   playerController.updatePlayer(req, res);
 });
-*/
 
 export default router;

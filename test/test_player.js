@@ -6,34 +6,32 @@ import Player from '../models/players.model';
 describe('Player model tests', () => {
     
     let testPlayer = new Player({ name: `test ${Math.floor(Math.random() * 10000)}` });
-    let game_id = mongoose.Types.ObjectId('5b4c805c562146abed9e748b'); // testgame
+    let game_id = mongoose.Types.ObjectId('5b4897ecb296bb2d71ce4cef'); // testgame
 
     it('Retrieves all players', (done) => {
-        Player.getAll().then(player => {
+        Player.getAll(player => {
             assert(typeof player !== 'undefined');
             done();
         });
     });
 
     it('Creates a player', (done) => {
-        Player.addPlayer(testPlayer).then(player => {
+        Player.addPlayer(testPlayer, (err, player) => {
             assert(!player.isNew);
             done();
         });
     });
 
     it('Retrieves a player', (done) => {
-        Player.find(testPlayer).then(player => {
+        Player.find(testPlayer, (err, player) => {
             assert(typeof player !== 'undefined');
             done();
         });
     });
 
     it('Updates a player', (done) => {
-        let x = 10, y = 20, z = 30;
-        Player.findOneAndUpdate({ name: testPlayer.name }, 
-        { $set: { x, y, z } },
-        {  new: true },
+        let player = { name: testPlayer.name, x: 99, y: 33, z: 55 };
+        Player.updatePlayer(player, 
         (err, updatedPlayer) => {
             if (err) throw err;
             assert(typeof updatedPlayer !== 'undefined');
@@ -41,12 +39,10 @@ describe('Player model tests', () => {
         });
     });
 
-    it('Adds player to a game: testgame ', (done) => {
-        Game.findOne({ name: 'testgame' }, function(err,game) {
+    it('Set player\'s game: test', (done) => {
+        Game.findOne({ name: 'test' }, function(err,game) {
             if (err) throw err;
-            Player.findOneAndUpdate({ name: testPlayer.name }, 
-                { $set: { game: game._id } },
-                { new: true },
+            Player.setGame(testPlayer.name, game._id, 
                 (err, player) => {
                     if (err) throw err;
                     assert(typeof player !== 'undefined');
@@ -55,7 +51,7 @@ describe('Player model tests', () => {
         });
     });
     
-    it('Find all players in game: testgame', (done) => {
+    it('Find all players in game: test ', (done) => {
         Player.find({ "game" : game_id })
         .then(playersFound => {
             try {
@@ -69,11 +65,12 @@ describe('Player model tests', () => {
     });
 
     it('Removes a player', (done) => {
-        Player.findOneAndRemove({ _id : mongoose.mongo.ObjectID(testPlayer._id) })
-        .then(() => Player.findOne({ _id : mongoose.mongo.ObjectID(testPlayer._id) }))
-        .then((player) => {
-          assert(player === null);
-          done();
+        Player.removePlayer(testPlayer.name, () => {
+            Player.findOne({ name: testPlayer.name },
+                (err, player) => {
+                    assert(player === null);
+                    done();
+                });
         });
     });
 });

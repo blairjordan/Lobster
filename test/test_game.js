@@ -31,8 +31,8 @@ describe('Game model tests', () => {
         Game.findOneAndRemove({ _id : mongoose.mongo.ObjectID(testGame._id) })
         .then(() => Game.findOne({ _id : mongoose.mongo.ObjectID(testGame._id) }))
         .then((game) => {
-          assert(game === null);
-          done();
+            assert(game === null);
+            done();
         });
     });
 });

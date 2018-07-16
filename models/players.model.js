@@ -1,9 +1,8 @@
 import mongoose from 'mongoose';
-import GamesModel from '../models/games.model';
+import Game from '../models/games.model';
 
 const PlayerSchema = mongoose.Schema({
   name: {type: String, required: true, unique: true, index: true},
-  last_updated: { type: Date, default: Date.now },
   x: { type: Number }, 
   y: { type: Number }, 
   z: { type: Number },
@@ -11,20 +10,38 @@ const PlayerSchema = mongoose.Schema({
     type: mongoose.Schema.ObjectId, 
     ref: 'game'
   }
-}, {collection : 'player'});
+}, {
+  timestamps: true,
+  collection : 'player'
+});
 
 let Player = mongoose.model('player', PlayerSchema);
 
-Player.getAll = () => {
-  return Player.find({});
+Player.getAll = cb => {
+  Player.find({}, cb);
 };
 
-Player.addPlayer = playerToAdd => {
-  return playerToAdd.save();
+Player.addPlayer = (playerToAdd, cb) => {
+  playerToAdd.save(cb);
 };
 
-Player.removePlayer = name => {
-  return Player.remove({ name });
+Player.removePlayer = (name, cb) => {
+  Player.findOneAndRemove({ name }, cb);
+};
+
+Player.updatePlayer = (player, cb) => {
+  const { name, x, y, z } = player;
+  Player.findOneAndUpdate({ name }, 
+  { $set: { x, y, z }
+  },
+  cb);
+};
+
+Player.setGame = (name, gameId, cb) => {
+  Player.findOneAndUpdate({ name }, 
+    { $set: { game: gameId } },
+    { new: true },
+    cb);
 };
 
 export default Player;
