@@ -2,19 +2,7 @@ import mongoose from 'mongoose';
 import PlayersModel from '../models/players.model';
 
 const GameSchema = mongoose.Schema({
-    name: {type: String, required: true, unique: true, index: true},
-    players: [
-        {
-            player: {
-                type: mongoose.Schema.ObjectId, 
-                ref: 'player'
-            },
-            last_updated: { type: Date, default: Date.now },
-            x: { type: Number, required: true }, 
-            y: { type: Number, required: true }, 
-            z: { type: Number, required: true }
-        }
-    ]
+    name: {type: String, required: true, unique: true, index: true}
 }, {collection : 'game'});
 
 let GamesModel = mongoose.model('game', GameSchema);
@@ -30,7 +18,7 @@ GamesModel.addGame = gameToAdd => {
 GamesModel.removeGame = name => {
     return GamesModel.remove({ name });
 };
-
+/*
 GamesModel.addPlayer = (gameName, playerName) => {
     return PlayersModel.findOne({name: playerName}, function(err,player) {
         if (!player) err = `player not found: ${playername}`;
@@ -47,10 +35,12 @@ GamesModel.addPlayer = (gameName, playerName) => {
             });
     });
 };
-
+*/
+/*
 GamesModel.getPlayerDetails = (playerName, callback) => {
     PlayersModel.findOne({name: playerName}, callback);
 };
+*/
 
 GamesModel.updateGame = (gameName, player, callback) => {
     const { _id, x, y, z } = player;
