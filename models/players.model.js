@@ -4,18 +4,18 @@ const PlayerSchema = mongoose.Schema({
   name: {type: String, required: true, unique: true, index: true}
 }, {collection : 'player'});
 
-let PlayersModel = mongoose.model('player', PlayerSchema);
+let Player = mongoose.model('player', PlayerSchema);
 
-PlayersModel.getAll = () => {
-  return PlayersModel.find({});
+Player.getAll = () => {
+  return Player.find({});
 };
 
-PlayersModel.addPlayer= playerToAdd => {
+Player.addPlayer = playerToAdd => {
   return playerToAdd.save();
 };
 
-PlayersModel.removePlayer = name => {
-  return PlayersModel.remove({ name });
+Player.removePlayer = name => {
+  return Player.remove({ name });
 };
 
-export default PlayersModel;
+export default Player;

@@ -1,4 +1,3 @@
-import Player from '../models/players.model';
 import Game from '../models/games.model';
 import logger from '../core/logger/app-logger';
 
