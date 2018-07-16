@@ -14,4 +14,8 @@ router.delete('/delete', (req, res) => {
     gameController.deleteGame(req, res);
 });
 
+//////
+////// TODO: Add route to add player to game
+//////
+
 export default router;
