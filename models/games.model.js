@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import PlayersModel from '../models/players.model';
 
 const GameSchema = mongoose.Schema({
     name: {type: String, required: true, unique: true, index: true}
@@ -53,17 +52,7 @@ GamesModel.updateGame = (gameName, player, callback) => {
 };
 
 /*
-GamesModel.deletePlayer = (gameName, playerName) => {
-    return PlayersModel.findOne({name: playerName}, (err,player) => {
-        if (!player) err = `player not found: ${playerName}`;
-        if (err) throw err;
-        return GamesModel.findOneAndRemove({ name: gameName, 'players._id': player._id }, 
-        (err, game) => {
-            if (err) throw err;
-            return game;
-        });
-    });
-};
+findOneAndRemove
 */
 
 export default GamesModel;

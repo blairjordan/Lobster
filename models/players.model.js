@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import GamesModel from '../models/games.model';
 
 const PlayerSchema = mongoose.Schema({
   name: {type: String, required: true, unique: true, index: true},
