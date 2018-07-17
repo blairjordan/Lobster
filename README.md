@@ -102,11 +102,6 @@ ___
 
 Fetch all players.
 
-#### Parameters
-|param|type|description|mandatory|
-|--|--|--|--|
-|id|string|The player ID|no|
-|name|string|Player name|no|
 ___
 ### /players/find
 **Method:** POST
