@@ -17,6 +17,21 @@ controller.getAll = async (req, res) => {
     });
 };
 
+controller.findPlayers = async (req, res) => {
+    const { game_name } = req.body;
+    Game.findOne({name: game_name}, (err, gameFound) => {
+        Player.find({ "game" : gameFound._id }, (err, playersFound) => {
+            if (err) {
+                logger.error('Error finding player(s) - ' + err);
+                res.status(500).json(err);
+                return;
+            }
+            logger.info('Searched for players.');
+            res.json(playersFound);
+        });
+    });
+};
+
 controller.addPlayer = async (req, res) => {
     const { name } = req.body;
     let playerToAdd = new Player( { name } );
@@ -74,6 +89,5 @@ controller.setGame = async (req, res) => {
             });
     });
 };
-
 
 export default controller;

@@ -6,6 +6,10 @@ router.get('/all', (req, res) => {
   playerController.getAll(req, res);
 });
 
+router.post('/find', (req, res) => {
+  playerController.findPlayers(req, res);
+});
+
 router.post('/add', (req, res) => {
   playerController.addPlayer(req, res);
 });
