@@ -2,20 +2,23 @@ import mongoose from 'mongoose';
 
 const GameSchema = mongoose.Schema({
     name: {type: String, required: true, unique: true, index: true}
-}, {collection : 'game'});
+}, {
+    timestamps: true,
+    collection : 'game'
+});
 
-let GamesModel = mongoose.model('game', GameSchema);
+let Game = mongoose.model('game', GameSchema);
 
-GamesModel.getAll = () => {
-    return GamesModel.find({});
+Game.getAll = cb => {
+    Game.find({}, cb);
 };
 
-GamesModel.addGame = gameToAdd => {
-    return gameToAdd.save();
+Game.addGame = (gameToAdd, cb) => {
+    gameToAdd.save(cb);
 };
 
-GamesModel.removeGame = name => {
-    return GamesModel.remove({ name });
+Game.removeGame = (gameToRemove, cb) => {
+    Game.findOneAndRemove(gameToRemove, cb);
 };
 
-export default GamesModel;
+export default Game;

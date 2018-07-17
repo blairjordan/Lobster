@@ -7,14 +7,14 @@ describe('Game model tests', () => {
     let testGame = new Game({ name: `game ${Math.floor(Math.random() * 10000)}` });
 
     it('Retrieves all games', (done) => {
-        Game.getAll().then(games => {
+        Game.getAll(games => {
             assert(typeof games !== 'undefined');
             done();
         });
     });
 
     it('Creates a game', (done) => {
-        Game.addGame(testGame).then(game => {
+        Game.addGame(testGame, (err,game) => {
             assert(!game.isNew);
             done();
         });
@@ -28,11 +28,13 @@ describe('Game model tests', () => {
     });
 
     it('Removes a game', (done) => {
-        Game.findOneAndRemove({ _id : mongoose.mongo.ObjectID(testGame._id) })
-        .then(() => Game.findOne({ _id : mongoose.mongo.ObjectID(testGame._id) }))
-        .then((game) => {
-            assert(game === null);
-            done();
+        let gameToRemove = { _id : mongoose.mongo.ObjectID(testGame._id) };
+        Game.removeGame(gameToRemove, () => {
+            Game.findOne(gameToRemove,
+                (err, game) => {
+                    assert(game === null);
+                    done();
+                });
         });
     });
 });

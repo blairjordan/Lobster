@@ -6,7 +6,7 @@ import Player from '../models/players.model';
 describe('Player model tests', () => {
     
     let testPlayer = new Player({ name: `test ${Math.floor(Math.random() * 10000)}` });
-    let game_id = mongoose.Types.ObjectId('5b4897ecb296bb2d71ce4cef'); // testgame
+    let game_id = mongoose.Types.ObjectId('5b4c2493f75e714460379db1'); // testgame
 
     it('Retrieves all players', (done) => {
         Player.getAll(player => {
@@ -40,7 +40,7 @@ describe('Player model tests', () => {
     });
 
     it('Set player\'s game: test', (done) => {
-        Game.findOne({ name: 'test' }, function(err,game) {
+        Game.findOne({ name: 'test' }, (err,game) => {
             if (err) throw err;
             Player.setGame(testPlayer.name, game._id, 
                 (err, player) => {
