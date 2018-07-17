@@ -10,8 +10,8 @@ router.post('/add', (req, res) => {
     gameController.addGame(req, res);
 });
 
-router.delete('/delete', (req, res) => {
-    gameController.deleteGame(req, res);
+router.delete('/remove', (req, res) => {
+    gameController.removeGame(req, res);
 });
 
 //////

@@ -11,7 +11,7 @@ controller.getAll = async (req, res) => {
             return;
         }
 
-        logger.info('Sending all games');
+        logger.info('Sending all players');
         res.json(players);
     });
 };

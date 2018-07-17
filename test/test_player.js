@@ -6,7 +6,7 @@ import Player from '../models/players.model';
 describe('Player model tests', () => {
     
     let testPlayer = new Player({ name: `test ${Math.floor(Math.random() * 10000)}` });
-    let game_id = mongoose.Types.ObjectId('5b4c2493f75e714460379db1'); // testgame
+    let game_id = mongoose.Types.ObjectId('5b4d4e98507e3e33f46f5e68'); // test
 
     it('Retrieves all players', (done) => {
         Player.getAll(player => {

@@ -32,8 +32,7 @@ Player.removePlayer = (name, cb) => {
 Player.updatePlayer = (player, cb) => {
   const { name, x, y, z } = player;
   Player.findOneAndUpdate({ name }, 
-  { $set: { x, y, z }
-  },
+  { $set: { x, y, z } },
   cb);
 };
 
