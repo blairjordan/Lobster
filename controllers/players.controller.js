@@ -23,7 +23,7 @@ controller.findPlayers = async (req, res) => {
     // TODO: Fix up this bit. At the moment we do a request whether or not game_name is provided.
 
     Game.findOne({name: game_name}, (err, gameFound) => {
-        const search  = (name) ? { name } : { "game" : gameFound._id };
+        const search  = (name) ? { name } : { "game" : (gameFound !== null) ? gameFound._id : '' };
         Player.find(search, (err, playersFound) => {
             if (err) {
                 logger.error('Error finding player(s) - ' + err);
