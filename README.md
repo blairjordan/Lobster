@@ -214,7 +214,7 @@ Assign a player to a game.
 |param|type|description|mandatory|
 |--|--|--|--|
 |game_name|string|The name of the game to add the player to|yes|
-|player_name|string|Player name|yes|
+|name|string|Player name|yes|
 
 **Example:**
 
