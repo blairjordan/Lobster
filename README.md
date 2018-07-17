@@ -1,4 +1,3 @@
-
 # Lobster
 
 An API for lobby, inventory and in-game economy.
@@ -21,7 +20,7 @@ Start the application:
 
 Run in prod:
 
-	forever start bin/www
+	forever start dist/server.js
 	
 **Database**
 
@@ -30,17 +29,19 @@ The easiest way to create the database is to run MongoDB within a Docker contain
     docker run -p 27017:27017 --name lobsterdb -d mongo
 
 ## API
-## game
+## games
 
 A game represents a multiplayer game instance.
 
-### /game
+### /games
 
 List all games.
 
 	/game
 
-### /game/create
+### /games/create
+
+**Method:** POST
 
 Create a new game.
 
@@ -53,21 +54,32 @@ Create a new game.
 	
     /game/create?name=GAMENAME
 
-### /game/add_player
+### /games/add_player
 
 Add an existing player to a game.
 
 #### Parameters
 |param|type|description|mandatory|
 |--|--|--|--|
-|game_id|string|The ID of the game to add the player to|yes|
-|player_id|string|Player ID|yes|
+|game_name|string|The name of the game to add the player to|yes|
+|player_name|string|Player name|yes|
 
 **Example:**
 
-    /game/add_player?game_id=GAMEID&player_id=PLAYERID
+URL:
 
-### /game/update_player
+    /game/add_player
+ 
+ JSON:
+    
+    { 
+      "game_name": "test_game",
+      "player_name": "player_name"
+    }
+
+### /games/update_player
+**Method:** POST
+
 Update a player's details within a game, such as the player's position.
 
 Any updates to the player trigger a change to the player's `timestamp`.
@@ -75,21 +87,35 @@ Any updates to the player trigger a change to the player's `timestamp`.
 #### Parameters
 |param|type|description|mandatory|
 |--|--|--|--|
-|game_id|string|The ID of the game where the player exists|yes|
-|player_id|string|Player ID|yes|
+|game_name|string|The name of the game where the player exists|yes|
+|player_name|string|Player name|yes|
 |x|string|Player's X coordinate|no|
 |y|string|Player's Y coordinate|no|
 |z|string|Player's Z coordinate|no|
 
 **Example:**
 
-    /game/update_player?game_id=GAMEID&player_id=PLAYERID&x=X&y=Y&z=Z
+URL
 
-## player
+    /games/update_player
+
+JSON:
+
+    { 
+      "game_name": "test_game",
+      "player_name": "test_player",
+      "x": 1,
+      "y": 2,
+      "z": 3
+    }
+
+
+
+## players
 
 An individual player. New players are not associated with a game by default.
 
-### /player
+### /players/find
 
 Fetch  a player.
 
@@ -98,11 +124,6 @@ Fetch  a player.
 |--|--|--|--|
 |id|string|The player ID|no|
 |name|string|Player name|no|
-
-**Examples**
-
-    /player?name=PLAYERNAME
-    /player?id=PLAYERID
 
 ### /player/create
 
@@ -116,3 +137,4 @@ Register a new player.
 **Example**
 
     /player/create?name=PLAYERNAME
+
