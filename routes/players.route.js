@@ -18,11 +18,11 @@ router.delete('/remove', (req, res) => {
   playerController.removePlayer(req, res);
 });
 
-router.patch('/update_player', (req, res) => {
+router.put('/update_player', (req, res) => {
   playerController.updatePlayer(req, res);
 });
 
-router.patch('/set_game', (req, res) => {
+router.put('/set_game', (req, res) => {
   playerController.setGame(req, res);
 });
 
