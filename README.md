@@ -19,6 +19,10 @@ Start the application:
     
     npm start
 
+Run in prod:
+
+	forever start bin/www
+	
 **Database**
 
 The easiest way to create the database is to run MongoDB within a Docker container:
