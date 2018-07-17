@@ -18,4 +18,8 @@ router.patch('/update_player', (req, res) => {
   playerController.updatePlayer(req, res);
 });
 
+router.patch('/set_game', (req, res) => {
+  playerController.setGame(req, res);
+});
+
 export default router;

@@ -1,3 +1,4 @@
+import Game from '../models/games.model';
 import Player from '../models/players.model';
 import logger from '../core/logger/app-logger';
 
@@ -46,15 +47,33 @@ controller.removePlayer = async (req, res) => {
 controller.updatePlayer = async (req, res) => {
     const { name, x, y, z } = req.body;
     Player.updatePlayer({ name, x, y, z },
-    (err, playerupdated) => {
-        if (err || playerupdated == null) {
+    (err, playerUpdated) => {
+        if (err || playerUpdated == null) {
             logger.error(`Error updating player ${name}: ${err}`);
             res.status(500).json(err || {message: 'Player name not found', name: 'PlayerNotFound'});
             return;
         }
         logger.info('Player updated');
-        res.json(playerupdated);
+        res.json(playerUpdated);
     });
 };
+
+controller.setGame = async (req, res) => {
+    const { name, game_name } = req.body;
+    Game.findOne({ name: game_name }, (err,game) => {
+        if (err) throw err;
+        Player.setGame(name, game._id, 
+            (err, playerUpdated) => {
+                if (err || playerUpdated  == null) {
+                    logger.error(`Error updating player ${name}: ${err}`);
+                    res.status(500).json(err || {message: 'Player name not found', name: 'PlayerNotFound'});
+                    return;
+                }
+                logger.info('Player updated');
+                res.json(playerUpdated);
+            });
+    });
+};
+
 
 export default controller;
