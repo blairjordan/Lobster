@@ -18,7 +18,8 @@ controller.getAll = async (req, res) => {
 };
 
 controller.findPlayers = async (req, res) => {
-    const { game_name } = req.body;
+    const { name, game_name } = req.body;
+    
     Game.findOne({name: game_name}, (err, gameFound) => {
         Player.find({ "game" : gameFound._id }, (err, playersFound) => {
             if (err) {
