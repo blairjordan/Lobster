@@ -1,0 +1,14 @@
+.axis path {
+  display: none;
+}
+
+.axis line {
+  stroke-opacity: 0.3;
+  shape-rendering: crispEdges;
+}
+
+.buttons {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
