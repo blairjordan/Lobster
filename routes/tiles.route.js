@@ -1,5 +1,6 @@
 
-import express from "express";
+import express from 'express';
+import {stitch} from '../core/lib/pincer';
 
 const router = express.Router();
 
@@ -29,6 +30,9 @@ router.get('/all', function (req, res) {
 });
 
 router.post('/make', function (req, res) {
+  const { size, tiles } = req.body;
+  stitch({ size, tiles });
+  
   res.json(req.body);
 });
 

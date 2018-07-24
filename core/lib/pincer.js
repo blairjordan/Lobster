@@ -5,7 +5,8 @@ var fs = require('fs');
 // Disambiguate width and height from pixels .. change to (hcount,vcount)?
 // Consolidate "stitch" and "generate" .. use options and pass global conf
 // .. Will get a better idea of this once endpoint implemented
-const {xMax,xMin,yMax,yMin} = input.size;
+
+//const {xMax,xMin,yMax,yMin} = input.size; 
 
 const conf = {
   temp: './temp',
@@ -51,7 +52,7 @@ const panel = async (input,width,height,temp,label,cb) => {
   }
 };
 
-combine = async (temp,width,height) => {
+const combine = async (temp,width,height) => {
   let found = [];
   fs.readdirSync(temp).forEach(file => {
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
@@ -78,15 +79,18 @@ combine = async (temp,width,height) => {
   }
 };
 
-const stitch = async input => {
-  const {path,tilePrefix,ext,width,height,notile} = conf.tile;
-  const [totalWidth,totalHeight] = [input.size.width * width,input.size.height * height];
+const stitch = async options => {
+  const {path,tilePrefix,ext,notile} = conf.tile;
+  const [totalWidth,totalHeight] = [options.size.width * conf.tile.width, options.size.height * conf.tile.height];
+
+  const {xMin,xMax,yMin,yMax} = options.tiles;
+
   let temp = tempDir();
 
   let promises = [];
-    for (y = yMax; y >= yMin; y--) {
+    for (let y = yMax; y >= yMin; y--) {
       let ptiles = [];
-      for (x = xMin; x <= xMax; x++) {
+      for (let x = xMin; x <= xMax; x++) {
         let tile = tileExists(x,y);
         if (tile) {
           let fpath = `${path}/${tilePrefix||'Tile_'}${x}x${y}${ext||'.png'}`;
@@ -104,7 +108,7 @@ const stitch = async input => {
       }
 
       promises.push(
-        new Promise(resolve => panel(ptiles,totalWidth,height,temp,y,
+        new Promise(resolve => panel(ptiles,totalWidth,conf.tile.height,temp,y,
           (err) => {
             if (err) { console.log(err); }
             resolve();
@@ -113,11 +117,11 @@ const stitch = async input => {
     }
   
   return Promise.all(promises).then(() => {
-    combine(temp,totalHeight,totalWidth,width);
+    combine(temp,totalHeight,totalWidth,conf.tile.width);
   });
 };
 
-export default {stitch};
+module.exports = {stitch};
 
 //stitch(input);
 
