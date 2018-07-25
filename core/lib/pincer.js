@@ -13,14 +13,14 @@ const conf = {
   tile: {
     width: 4096,
     height: 4096,
-    path: 'tiles',
+    path: './assets/tiles',
     tilePrefix : 'Tile_',
     ext: '.png',
     notile: 'default'
   }
 };
 
-const tileExists = (input,x,y) => input.tiles.find(t => (t.x === x) && (t.y === y) );
+const tileExists = (tiles,x,y) => tiles.find(t => (t.x === x) && (t.y === y) );
 
 const tempDir = () => {
   let tmp = `${conf.temp}/${Math.round((Math.random() * 36 ** 12)).toString(36)}`;
@@ -34,9 +34,8 @@ const tempDir = () => {
 
 // panel([ 'NULL:', 'NULL:', 'NULL:' ],12288,4096,'./temp/TESTING','0', (err) => {console.log(err);});
 const panel = async (input,width,height,temp,label,cb) => {
-  let gen = null;
   if (input.length > 0) {
-    gen = gm()
+    let gen = gm()
     .geometry(`${width}+${height}+0+0`)
     .tile(`${input.length}x1`)
     .background('#000000');
@@ -61,7 +60,7 @@ const combine = async (temp,width,height) => {
   let sorted = found.sort((a,b) => (a.idx < b.idx) ? 1 : ((b.idx > a.idx) ? -1 : 0));
 
   if (sorted.length > 1) {
-    gen = gm()
+    let gen = gm()
     .tile(`1x${sorted.length}`)
     .geometry(`${width}+${height}+0+0`);
     
@@ -70,20 +69,20 @@ const combine = async (temp,width,height) => {
     }
     
     gen.write(`${temp}/final.png`, function(err) {
-      if(err)
-        console.log(err);
-      if(!err) 
-        console.log("Written montage image.");
-      });
-    ;
-  }
+      if (err) { console.log(err); }
+      else { console.log("Written montage image."); }
+    });
+    
+  } else { console.log('Nothing to combine'); }
 };
 
+// TODO: pass conf in options, so we don't have to maintain it here
 const stitch = async options => {
   const {path,tilePrefix,ext,notile} = conf.tile;
-  const [totalWidth,totalHeight] = [options.size.width * conf.tile.width, options.size.height * conf.tile.height];
+  const {xMin,xMax,yMin,yMax} = options.size;
+  const {tiles} = options;
 
-  const {xMin,xMax,yMin,yMax} = options.tiles;
+  const [totalWidth,totalHeight] = [options.size.width * conf.tile.width, options.size.height * conf.tile.height];
 
   let temp = tempDir();
 
@@ -91,7 +90,7 @@ const stitch = async options => {
     for (let y = yMax; y >= yMin; y--) {
       let ptiles = [];
       for (let x = xMin; x <= xMax; x++) {
-        let tile = tileExists(x,y);
+        let tile = tileExists(tiles,x,y);
         if (tile) {
           let fpath = `${path}/${tilePrefix||'Tile_'}${x}x${y}${ext||'.png'}`;
           let dpath = `${path}/${tilePrefix||'Tile_'}${notile}${ext||'.png'}`;
@@ -125,6 +124,7 @@ module.exports = {stitch};
 
 //stitch(input);
 
+// tweak and expose this stuff when needed (chops up tiles again)
 /*
 const generateTiles = (options) => {
 
