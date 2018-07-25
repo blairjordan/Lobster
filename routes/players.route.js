@@ -1,5 +1,5 @@
-import express from "express";
-import playerController from "../controllers/players.controller";
+import express from 'express';
+import playerController from '../controllers/players.controller';
 const router = express.Router();
 
 router.get('/all', (req, res) => {

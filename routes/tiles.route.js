@@ -1,5 +1,6 @@
 
 import express from 'express';
+import tileController from '../controllers/tiles.controller';
 import {stitch} from '../core/lib/pincer';
 
 const router = express.Router();
@@ -9,6 +10,14 @@ router.get('/', function (req, res) {
 });
 
 let demoImg = 'http://labs.pegleg.com.au/images/grid_1K.png';
+
+//router.get('/all', (req, res) => {
+  //tileController.getAll(req, res);
+  // This will return the array below.
+  // Go to db: if tile is there, add it to the array
+  // Check in the filesystem, if it exists, updata the array
+  // If it doesn't exist, use the default from the config. Controller will do this.
+//});
 
 router.get('/all', function (req, res) {
   res.json([
