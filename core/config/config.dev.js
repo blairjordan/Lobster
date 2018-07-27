@@ -19,7 +19,8 @@ const config = {
       path: './assets/tiles',
       tilePrefix : 'Tile_',
       ext: '.png',
-      notile: 'default'
+      notile: 'default',
+      separator: 'x'
     }
   }
 };

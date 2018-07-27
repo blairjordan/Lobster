@@ -67,7 +67,7 @@ const combine = async (conf,temp,width,height) => {
 const stitch = async options => {
   const {tiles, conf, size} = options;
   const {xMin,xMax,yMin,yMax} = size;
-  const {path,tilePrefix,ext,notile} = conf.tile;
+  const {path,tilePrefix,ext,notile,separator} = conf.tile;
   
   const [totalWidth,totalHeight] = [size.width * conf.tile.width, size.height * conf.tile.height];
 
@@ -79,7 +79,7 @@ const stitch = async options => {
       for (let x = xMin; x <= xMax; x++) {
         let tile = tileExists(tiles,x,y);
         if (tile) {
-          let fpath = `${path}/${tilePrefix||'Tile_'}${x}x${y}${ext||'.png'}`;
+          let fpath = `${path}/${tilePrefix||'Tile_'}${x}${separator||'x'}${y}${ext||'.png'}`;
           let dpath = `${path}/${tilePrefix||'Tile_'}${notile}${ext||'.png'}`;
           
           if (fs.existsSync(fpath)) {
