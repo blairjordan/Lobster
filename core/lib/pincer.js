@@ -8,21 +8,9 @@ var fs = require('fs');
 
 //const {xMax,xMin,yMax,yMin} = input.size; 
 
-const conf = {
-  temp: './temp',
-  tile: {
-    width: 4096,
-    height: 4096,
-    path: './assets/tiles',
-    tilePrefix : 'Tile_',
-    ext: '.png',
-    notile: 'default'
-  }
-};
-
 const tileExists = (tiles,x,y) => tiles.find(t => (t.x === x) && (t.y === y) );
 
-const tempDir = () => {
+const tempDir = conf => {
   let tmp = `${conf.temp}/${Math.round((Math.random() * 36 ** 12)).toString(36)}`;
   if (!fs.existsSync(tmp)){
     fs.mkdirSync(tmp);
@@ -33,7 +21,7 @@ const tempDir = () => {
 };
 
 // panel([ 'NULL:', 'NULL:', 'NULL:' ],12288,4096,'./temp/TESTING','0', (err) => {console.log(err);});
-const panel = async (input,width,height,temp,label,cb) => {
+const panel = async (conf,input,width,height,temp,label,cb) => {
   if (input.length > 0) {
     let gen = gm()
     .geometry(`${width}+${height}+0+0`)
@@ -51,7 +39,7 @@ const panel = async (input,width,height,temp,label,cb) => {
   }
 };
 
-const combine = async (temp,width,height) => {
+const combine = async (conf,temp,width,height) => {
   let found = [];
   fs.readdirSync(temp).forEach(file => {
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
@@ -76,15 +64,14 @@ const combine = async (temp,width,height) => {
   } else { console.log('Nothing to combine'); }
 };
 
-// TODO: pass conf in options, so we don't have to maintain it here
 const stitch = async options => {
+  const {tiles, conf, size} = options;
+  const {xMin,xMax,yMin,yMax} = size;
   const {path,tilePrefix,ext,notile} = conf.tile;
-  const {xMin,xMax,yMin,yMax} = options.size;
-  const {tiles} = options;
+  
+  const [totalWidth,totalHeight] = [size.width * conf.tile.width, size.height * conf.tile.height];
 
-  const [totalWidth,totalHeight] = [options.size.width * conf.tile.width, options.size.height * conf.tile.height];
-
-  let temp = tempDir();
+  let temp = tempDir(conf);
 
   let promises = [];
     for (let y = yMax; y >= yMin; y--) {
@@ -107,7 +94,7 @@ const stitch = async options => {
       }
 
       promises.push(
-        new Promise(resolve => panel(ptiles,totalWidth,conf.tile.height,temp,y,
+        new Promise(resolve => panel(conf,ptiles,totalWidth,conf.tile.height,temp,y,
           (err) => {
             if (err) { console.log(err); }
             resolve();
@@ -116,7 +103,7 @@ const stitch = async options => {
     }
   
   return Promise.all(promises).then(() => {
-    combine(temp,totalHeight,totalWidth,conf.tile.width);
+    combine(conf,temp,totalHeight,totalWidth,conf.tile.width);
   });
 };
 

@@ -30,4 +30,8 @@ Tile.removeTile = (tileToRemove, cb) => {
   Tile.findOneAndRemove(tileToRemove, cb);
 };
 
+// Seeds the local database with tiles located in the filesystem
+Tile.seed = conf => {
+};
+
 export default Tile;

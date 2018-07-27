@@ -1,7 +1,6 @@
 
 import express from 'express';
 import tileController from '../controllers/tiles.controller';
-import {stitch} from '../core/lib/pincer';
 
 const router = express.Router();
 
@@ -38,11 +37,12 @@ router.get('/all', function (req, res) {
   ]);
 });
 
+router.get('/seed', (req, res) => {
+  tileController.seed();
+});
+
 router.post('/make', function (req, res) {
-  const { size, tiles } = req.body;
-  stitch({ size, tiles });
-  
-  res.json(req.body);
+  tileController.make(req, res);
 });
 
 export default router;

@@ -1,12 +1,27 @@
 import path from "path";
 
-let config = {};
-
-config.logFileDir = path.join(__dirname, '../../log');
-config.logFileName = 'app.log';
-config.dbHost = process.env.dbHost || 'localhost';
-config.dbPort = process.env.dbPort || '27017';
-config.dbName = process.env.dbName || 'lobster';
-config.serverPort = process.env.serverPort || 3000;
+const config = {
+  serverPort: process.env.serverPort || 3000,
+  log: {
+    logFileDir: path.join(__dirname, '../../log'),
+    logFileName: 'app.log',
+  },
+  db: {
+    dbHost: process.env.dbHost || 'localhost',
+    dbPort: process.env.dbPort || '27017',
+    dbName: process.env.dbName || 'lobster',
+  },
+  pincer: {
+    temp: './temp',
+    tile: {
+      width: 4096,
+      height: 4096,
+      path: './assets/tiles',
+      tilePrefix : 'Tile_',
+      ext: '.png',
+      notile: 'default'
+    }
+  }
+};
 
 export default config;
