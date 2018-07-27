@@ -1,7 +1,8 @@
-import express from "express";
-import path from "path";
-import bodyParser from "body-parser";
-import cors from "cors";
+import express from 'express';
+import path from 'path';
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import fs from 'fs';
 import logger from './core/logger/app-logger';
 import morgan from 'morgan';
 import config from './core/config/config.dev';
@@ -18,6 +19,9 @@ logger.stream = {
 };
 
 connectToDb();
+
+if (!fs.existsSync('./temp'))
+    fs.mkdirSync('./temp');
 
 const app = express();
 
