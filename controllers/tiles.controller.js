@@ -1,12 +1,16 @@
 import Tile from '../models/tiles.model';
 import logger from '../core/logger/app-logger';
+import fs from 'fs';
+import path from 'path';
+import { stitch } from '../core/lib/pincer';
+import config from '../core/config/config.dev';
 
 const controller = {};
 
-let demoImg = 'http://labs.pegleg.com.au/images/grid_1K.png';
-
 controller.getAll = async (req, res) => {
-  const tiles = Tile.getAll((err, tiles) => {
+  const { ext, tilePrefix, separator } = config.pincer.tile;
+
+  Tile.getAll((err, tiles) => {
       if (err) {
           logger.error('Error getting all tiles - ' + err);
           res.status(500).json(err);
@@ -14,36 +18,46 @@ controller.getAll = async (req, res) => {
       }
       logger.info('Sending all tiles');
 
-      // Inject URL into tiles here
+      let tiles2 = tiles.map((obj) => {
+        let tile = obj.toObject(); // mongoose object to regular object
+        tile.url = `${tilePrefix}${obj.x}${separator}${obj.y}${ext}`;
 
-      //res.json(req.body);
-      res.json([
-        {i: 0, x: 0, y: 0, url: demoImg, selected: false},
-        {i: 1, x: 4, y: 4, url: demoImg, selected: false},
-        {i: 2, x: 6, y: 8, url: demoImg, selected: false},
-        {i: 3, x: 7, y: 3, url: demoImg, selected: false},
-        {i: 4, x: 3, y: 5, url: demoImg, selected: false},
-        {i: 5, x: 8, y: 6, url: demoImg, selected: false},
-        {i: 6, x: 6, y: 8, url: demoImg, selected: false},
-        {i: 5, x: 4, y: -3, url: demoImg, selected: false},
-        {i: 8, x: -4, y: -2, url: demoImg, selected: false},
-        {i: 9, x: -1, y: 1, url: demoImg, selected: false},
-        {i: 10, x: 1, y: -1, url: demoImg, selected: false},
-        {i: 11, x: 1, y: 1, url: demoImg, selected: false},
-        {i: 12, x: -1, y: -1, url: demoImg, selected: false},
-        {i: 13, x: -2, y: -1, url: demoImg, selected: false}
-      ]);
+        tile.selected = false;
+        return tile;
+      })
+      
+      res.json(tiles2);
   });
 };
 
-controller.make = async (req, res) => {
+Tile.make = options => {
   const { size, tiles } = req.body;
   Tile.make({size,tiles});
+  stitch({ conf: config.pincer, size, tiles });
   res.json(req.body);
 };
 
 controller.seed = async (req, res) => {
-  Tile.seed();
+  const { ext, tilePrefix, separator } = config.pincer.tile;
+  fs.readdirSync(config.pincer.tile.path).forEach(f => {
+    
+    if (path.extname(f) === ext) {
+      let coords = f.replace(tilePrefix,'').replace(ext,'').split(separator);
+      if (coords.length > 1) {
+        let [x,y] = coords;
+        Tile.findOne({x, y}, (err, tile) => {
+          if (err) { throw err; }
+          if (tile === null) {
+            let newTile = new Tile({x,y});
+            newTile.save((err,tileAdded) => {
+              if (err) { throw err; }
+              console.log(tileAdded);
+            });
+          }
+        });
+      }
+    }
+  });
   res.json(req.body);
 };
 
