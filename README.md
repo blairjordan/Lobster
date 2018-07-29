@@ -28,6 +28,10 @@ Run in prod:
 The easiest way to create the database is to run MongoDB within a Docker container:
 
     docker run -p 27017:27017 --name lobsterdb -d mongo
+    
+Run the docker container for PostgreSQL:
+
+    docker run --name lobster --rm -e POSTGRES_PASSWORD=lobster -p 5432:5432 -d postgres:latest
 
 ## API
 ## games
