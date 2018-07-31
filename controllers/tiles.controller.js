@@ -24,7 +24,7 @@ controller.getAll = async (req, res) => {
 
         tile.selected = false;
         return tile;
-      })
+      });
       
       res.json(tiles2);
   });
