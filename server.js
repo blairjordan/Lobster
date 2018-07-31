@@ -9,7 +9,8 @@ import config from './core/config/config.dev';
 import players from './routes/players.route';
 import games from './routes/games.route';
 import tiles from './routes/tiles.route';
-import connectToDb from './db/connect';
+import trade from './routes/trade.route';
+import {connectToMongo, connectToPostgres} from './db/connect';
 
 const port = config.serverPort;
 logger.stream = {
@@ -18,7 +19,8 @@ logger.stream = {
     }
 };
 
-connectToDb();
+connectToMongo();
+connectToPostgres();
 
 if (!fs.existsSync('./temp'))
     fs.mkdirSync('./temp');
@@ -37,6 +39,7 @@ app.use(express.static(__dirname + '/assets' ));
 app.use('/players', players);
 app.use('/games', games);
 app.use('/tiles', tiles);
+app.use('/trade', trade);
 
 //Index route
 app.get('/', function (req, res) {

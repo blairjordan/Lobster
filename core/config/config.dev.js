@@ -7,9 +7,18 @@ const config = {
     logFileName: 'app.log',
   },
   db: {
-    dbHost: process.env.dbHost || 'localhost',
-    dbPort: process.env.dbPort || '27017',
-    dbName: process.env.dbName || 'lobster',
+    mongo: {
+      host: process.env.mhost || 'localhost',
+      port: process.env.mport || '27017',
+      name: process.env.mname || 'lobster',
+    },
+    postgres: {
+      host: process.env.pghost || 'localhost',
+      port: process.env.pgport || '5432',
+      database: process.env.pgdb || 'lobster',
+      user: process.env.pguser || 'lobster',
+      pass: process.env.pgpass || 'lobster',
+    }
   },
   pincer: {
     temp: './temp',

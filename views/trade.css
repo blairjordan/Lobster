@@ -1,0 +1,19 @@
+.content {
+  width: 40em;
+}
+
+.column {
+  float: left;
+  width: 50%;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.action {
+  width: 50%;
+  margin: 0 auto;
+}

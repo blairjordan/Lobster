@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
 
-import connectToDb from '../db/connect';
+import {connectToMongo} from '../db/connect';
 
-connectToDb();
+connectToMongo();

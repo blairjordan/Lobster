@@ -1,19 +1,33 @@
 import Mongoose from 'mongoose';
 import logger from '../core/logger/app-logger';
 import config from '../core/config/config.dev';
+const pgp = require('pg-promise')();
 
 Mongoose.Promise = global.Promise;
 
-const connectToDb = async () => {
-    const { dbHost, dbPort, dbName } = config.db;
+const connectToMongo = async () => {
+    const { host, port, name } = config.db.mongo;
     
     try {
-        await Mongoose.connect(process.env.MONGODB_URI || `mongodb://${dbHost}:${dbPort}/${dbName}`, { useMongoClient: true });
-        logger.info('Connected to mongo.');
+        await Mongoose.connect(process.env.MONGODB_URI || `mongodb://${host}:${port}/${name}`, { useMongoClient: true });
+        logger.info('Connected to Mongo.');
     }
     catch (err) {
         logger.error('Could not connect to MongoDB');
     }
 };
 
-export default connectToDb;
+let db;
+const connectToPostgres = async () => {
+    const { host, port, database, user, pass } = config.db.postgres;
+    
+    try {
+        db = await pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
+        logger.info('Connected to Postgres.');
+    }
+    catch (err) {
+        logger.error('Could not connect to Postgres');
+    }
+};
+
+module.exports = {connectToMongo, connectToPostgres, db};
