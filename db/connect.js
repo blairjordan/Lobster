@@ -23,7 +23,15 @@ const connectToPostgres = async () => {
     
     try {
         db = await pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
-        logger.info('Connected to Postgres.');
+        
+        db.connect()
+        .then(function (obj) {
+            logger.info('Connected to Postgres.');
+            obj.done();
+        })
+        .catch(function (error) {
+            console.log("ERROR:", error.message);
+        });
     }
     catch (err) {
         logger.error('Could not connect to Postgres');
