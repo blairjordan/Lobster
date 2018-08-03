@@ -1,7 +1,7 @@
 const assert = require('assert');
 import Trade from '../models/trade.model';
 
-describe('Game trade tests', () => {
+describe('Trade model tests', () => {
     
     // TODO: Add offer
 

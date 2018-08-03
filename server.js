@@ -10,6 +10,7 @@ import players from './routes/players.route';
 import games from './routes/games.route';
 import tiles from './routes/tiles.route';
 import trade from './routes/trade.route';
+import items from './routes/items.route';
 import {connectToMongo, connectToPostgres} from './db/connect';
 
 const port = config.serverPort;
@@ -40,6 +41,7 @@ app.use('/players', players);
 app.use('/games', games);
 app.use('/tiles', tiles);
 app.use('/trade', trade);
+app.use('/items', items);
 
 //Index route
 app.get('/', function (req, res) {
