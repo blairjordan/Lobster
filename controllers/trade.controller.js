@@ -4,8 +4,15 @@ import logger from '../core/logger/app-logger';
 const controller = {};
 
 controller.getOffers = async (req, res) => {
-  res.json(Trade.getOffers());
+  Trade.getOffers()
+  .then(function (data) {
+    res.json(data);
+  })
+  .catch(function (error) {
+    logger.error(error);
+    res.sendStatus(500);
+    return;
+  });
 };
-
 
 export default controller;

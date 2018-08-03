@@ -1,7 +1,7 @@
 import Mongoose from 'mongoose';
 import logger from '../core/logger/app-logger';
 import config from '../core/config/config.dev';
-const pgp = require('pg-promise')();
+const pgp = require('pg-promise')({});
 
 Mongoose.Promise = global.Promise;
 
@@ -17,20 +17,17 @@ const connectToMongo = async () => {
     }
 };
 
-let db;
+const { host, port, database, user, pass } = config.db.postgres;
+let db =  pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
 const connectToPostgres = async () => {
-    const { host, port, database, user, pass } = config.db.postgres;
-    
     try {
-        db = await pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
-        
         db.connect()
         .then(function (obj) {
             logger.info('Connected to Postgres.');
-            obj.done();
+            //obj.done();
         })
         .catch(function (error) {
-            console.log("ERROR:", error.message);
+            logger.error("ERROR:", error.message);
         });
     }
     catch (err) {
