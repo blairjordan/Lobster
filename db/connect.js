@@ -18,7 +18,7 @@ const connectToMongo = async () => {
 };
 
 const { host, port, database, user, pass } = config.db.postgres;
-let db =  pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
+let db = pgp(`postgres://${user}:${pass}@${host}:${port}/${database}`);
 const connectToPostgres = async () => {
     try {
         db.connect()
