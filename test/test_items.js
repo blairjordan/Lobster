@@ -5,7 +5,7 @@ describe('Item model tests', () => {
     
     let item = null;
     it('Creates an item', (done) => {
-        Item.addItem({name: 'blowfish', type: 1, description: 'Poisonous puffer fish.'})
+        Item.addItem({name: 'blowfish', type: 'fish', description: 'Poisonous puffer fish.'})
         .then(function (itemAdded) {
             item = itemAdded;
             assert(typeof itemAdded !== 'undefined');
