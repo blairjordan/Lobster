@@ -89,3 +89,15 @@ FROM
     AND p2.player_id = o.target_id
     AND o.offer_id = oi.offer_id
     AND oi.item_id = i.item_id;
+
+CREATE OR REPLACE FUNCTION update_modified_column()   
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.modified = now();
+    RETURN NEW;   
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_item_modtime BEFORE UPDATE ON item FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
