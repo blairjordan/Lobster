@@ -16,7 +16,7 @@ CREATE TABLE item_type
 CREATE TABLE player
 (
   player_id   BIGSERIAL PRIMARY KEY,
-  username    VARCHAR(18) NOT NULL ,
+  username    VARCHAR(20) NOT NULL ,
   email       VARCHAR(100)
 );
 

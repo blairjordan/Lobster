@@ -7,7 +7,6 @@ import logger from './core/logger/app-logger';
 import morgan from 'morgan';
 import config from './core/config/config.dev';
 import players from './routes/players.route';
-import games from './routes/games.route';
 import tiles from './routes/tiles.route';
 import trade from './routes/trade.route';
 import items from './routes/items.route';
@@ -38,7 +37,6 @@ app.use(express.static(__dirname + '/public' ));
 app.use(express.static(__dirname + '/assets' ));
 
 app.use('/players', players);
-app.use('/games', games);
 app.use('/tiles', tiles);
 app.use('/trade', trade);
 app.use('/items', items);

@@ -39,7 +39,6 @@ describe('Item model tests', () => {
 			});
 	});
 
-	/*
 	it('Deletes an item', (done) => {
 		const { item_id } = item;
 		Item.removeItem({ item_id })
@@ -50,5 +49,5 @@ describe('Item model tests', () => {
 			.catch(function (e) {
 				done(e);
 			});
-	});*/
+	});
 });
