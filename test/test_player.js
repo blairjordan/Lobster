@@ -29,7 +29,7 @@ describe('Player model tests', () => {
 
   it('Updates a player', (done) => {
     const { player_id } = player;
-    Player.updatePlayer({ player_id, username: 'updated_test_player', email: 'test_updated@lobster.com' })
+    Player.updatePlayer({ player_id, username: 'updated_test_player', email: 'test_updated@lobster.com', x: 10, y: 20, z:30 })
       .then(function (updatedCount) {
         assert(updatedCount > 0);
         done();
