@@ -29,8 +29,8 @@ Player.removePlayer = async (options) => {
 };
 
 Player.updatePlayer = async (options) => {
-  const {player_id,username,email} = options;
-  return db.result('UPDATE player SET username = $1, email = $2 WHERE player_id = $3', [username, email, player_id])
+  const {player_id,username,email,x,y,z} = options;
+  return db.result('UPDATE player SET username = $2, email = $3, x = $4, y = $5, z = $6 WHERE player_id = $1', [player_id, username, email, x, y, z])
   .then(result => {
     return result.rowCount;
   })

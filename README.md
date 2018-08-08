@@ -40,69 +40,6 @@ You can fetch your Postgres IP using the following command:
     docker network inspect pegleg
     
 ## API
-## games
-
-A game represents a multiplayer game instance.
-
-___
-
-### /games/all
-
-**Method:** GET
-
-List all games.
-
-	/games/all
-
-___
-
-### /games/add
-
-**Method:** POST
-
-Create a new game.
-
-#### Parameters
-|param|type|description|mandatory|
-|--|--|--|--|
-|name|string|Name of the game to create|yes|
-
-**Example:**
-
-URL:
-	
-	/games/add
-
-JSON:
-
-    { 
-    	"name": "test_game"
-    }
-
-### /games/remove
-
-**Method:** DELETE
-
-Remove a new game.
-
-#### Parameters
-|param|type|description|mandatory|
-|--|--|--|--|
-|name|string|Name of the game to remove|yes|
-
-**Example:**
-
-URL:
-	
-	/games/remove
-
-JSON:
-
-    { 
-    	"name": "test_game"
-    }
-
-
 ## players
 
 An individual player. New players are not associated with a game by default.

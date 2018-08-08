@@ -17,7 +17,10 @@ CREATE TABLE player
 (
   player_id   BIGSERIAL PRIMARY KEY,
   username    VARCHAR(20) NOT NULL ,
-  email       VARCHAR(100)
+  email       VARCHAR(100),
+  x FLOAT,
+  y FLOAT,
+  z FLOAT
 );
 
 CREATE TABLE item
