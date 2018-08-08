@@ -1,20 +1,18 @@
-import Game from '../models/games.model';
-import Player from '../models/players.model';
+import Player from '../models/player.model';
 import logger from '../core/logger/app-logger';
 
 const controller = {};
 
 controller.getAll = async (req, res) => {
-    const players = Player.getAll((err, players) => {
-        if (err) {
-            logger.error('Error getting all players - ' + err);
-            res.status(500).json(err);
-            return;
-        }
-
-        logger.info('Sending all players');
+    try {
+        const players = await Player.getAll();
+        logger.info('sending all players');
         res.json(players);
-    });
+    }
+    catch(err) {
+        logger.error('Error in getting players- ' + err);
+        res.json(err);
+    }
 };
 
 controller.findPlayers = async (req, res) => {
@@ -79,6 +77,7 @@ controller.updatePlayer = async (req, res) => {
     });
 };
 
+/*
 controller.setGame = async (req, res) => {
     const { name, game_name } = req.body;
     Game.findOne({ name: game_name }, (err,game) => {
@@ -95,5 +94,6 @@ controller.setGame = async (req, res) => {
             });
     });
 };
+*/
 
 export default controller;
