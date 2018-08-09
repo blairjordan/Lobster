@@ -3,7 +3,13 @@ import {db} from '../db/connect';
 let Item = {};
 
 Item.getAll = async () => {
-  return db.any(`SELECT * FROM item`);
+  return db.any(`SELECT * FROM item`)
+  .then(items => {
+    return items;
+  })
+  .catch(error => {
+    throw error;
+  });
 };
 
 Item.addItem = async (options) => {
