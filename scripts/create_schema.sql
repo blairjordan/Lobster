@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS offer CASCADE;
 DROP TABLE IF EXISTS player CASCADE;
 DROP TABLE IF EXISTS item CASCADE;
 DROP TABLE IF EXISTS item_type CASCADE;
+DROP TABLE IF EXISTS tile CASCADE;
 
 CREATE TABLE item_type
 (
@@ -20,7 +21,9 @@ CREATE TABLE player
   email       VARCHAR(100),
   x FLOAT,
   y FLOAT,
-  z FLOAT
+  z FLOAT,
+  created        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE item
@@ -59,6 +62,15 @@ CREATE TABLE offer_item
   item_count    INT NOT NULL
 );
 
+CREATE TABLE tile
+(
+  tile_id BIGSERIAL  PRIMARY KEY,
+  x FLOAT,
+  y FLOAT,
+  created        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Insert test data
 INSERT INTO player(username) VALUES ('blair');
 INSERT INTO player(username) VALUES ('matt');
@@ -74,6 +86,12 @@ INSERT INTO offer(source_id, target_id, target_status) VALUES (2, 1, 'O');
 INSERT INTO offer_item(offer_id, item_id, item_count) VALUES (1,1,20);
 INSERT INTO offer_item(offer_id, item_id, item_count) VALUES (1,2,5);
 INSERT INTO offer_item(offer_id, item_id, item_count) VALUES (2,2,10);
+
+INSERT INTO tile(x,y) VALUES (0,1);
+INSERT INTO tile(x,y) VALUES (1,-1);
+INSERT INTO tile(x,y) VALUES (1,2);
+INSERT INTO tile(x,y) VALUES (0,-1);
+INSERT INTO tile(x,y) VALUES (-2,0);
 
 CREATE VIEW v_offers AS
 SELECT
@@ -103,4 +121,8 @@ $$ language 'plpgsql';
 
 CREATE TRIGGER update_item_modtime BEFORE UPDATE ON item FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
+CREATE TRIGGER update_player_modtime BEFORE UPDATE ON player FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
 CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+CREATE TRIGGER update_tile_modtime BEFORE UPDATE ON tile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();

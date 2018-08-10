@@ -9,25 +9,22 @@ const controller = {};
 
 controller.getAll = async (req, res) => {
   const { ext, tilePrefix, separator } = config.pincer.tile;
+  try {
+    const tiles = await Tile.getAll();
+    let tiles2 = tiles.map((tile) => {
+      tile.url = `${tilePrefix}${tile.x}${separator}${tile.y}${ext}`;
 
-  Tile.getAll((err, tiles) => {
-      if (err) {
-          logger.error('Error getting all tiles - ' + err);
-          res.status(500).json(err);
-          return;
-      }
-      logger.info('Sending all tiles');
+      tile.selected = false;
+      return tile;
+    });
 
-      let tiles2 = tiles.map((obj) => {
-        let tile = obj.toObject(); // mongoose object to regular object
-        tile.url = `${tilePrefix}${obj.x}${separator}${obj.y}${ext}`;
-
-        tile.selected = false;
-        return tile;
-      });
-      
-      res.json(tiles2);
-  });
+    logger.info('sending all tiles');
+    res.json(tiles2);
+  }
+  catch (err) {
+    logger.error('Error in getting tiles- ' + err);
+    res.status(500).json(err);
+  }
 };
 
 controller.make = options => {
@@ -37,6 +34,7 @@ controller.make = options => {
   res.json(req.body);
 };
 
+// TODO: Convert to Postgres. Easy, but I'm lazy.
 controller.seed = async (req, res) => {
   const { ext, tilePrefix, separator } = config.pincer.tile;
   fs.readdirSync(config.pincer.tile.path).forEach(f => {

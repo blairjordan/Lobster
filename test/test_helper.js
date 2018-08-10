@@ -1,6 +1,3 @@
-const mongoose = require('mongoose');
+import {connectToPostgres} from '../db/connect';
 
-import {connectToMongo, connectToPostgres} from '../db/connect';
-
-connectToMongo();
 connectToPostgres();

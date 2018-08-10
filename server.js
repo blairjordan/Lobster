@@ -10,7 +10,7 @@ import players from './routes/players.route';
 import tiles from './routes/tiles.route';
 import trade from './routes/trade.route';
 import items from './routes/items.route';
-import {connectToMongo, connectToPostgres} from './db/connect';
+import {connectToPostgres} from './db/connect';
 
 const port = config.serverPort;
 logger.stream = {
@@ -19,7 +19,6 @@ logger.stream = {
     }
 };
 
-connectToMongo();
 connectToPostgres();
 
 if (!fs.existsSync('./temp'))
