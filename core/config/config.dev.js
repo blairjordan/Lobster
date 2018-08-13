@@ -7,11 +7,6 @@ const config = {
     logFileName: 'app.log',
   },
   db: {
-    mongo: {
-      host: process.env.mhost || 'localhost',
-      port: process.env.mport || '27017',
-      name: process.env.mname || 'lobster',
-    },
     postgres: {
       host: process.env.pghost || 'localhost',
       port: process.env.pgport || '5432',
