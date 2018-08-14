@@ -25,7 +25,7 @@ if (!fs.existsSync('./temp'))
     fs.mkdirSync('./temp');
 
 const app = express();
-
+// app.use(compression());
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 app.use(cors());

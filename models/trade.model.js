@@ -7,8 +7,8 @@ Trade.getOffers = async () => {
 };
 
 Trade.findOffers = async (options) => {
-  const { target_player_name } = options;
-  return await db.any(`SELECT * FROM v_offers WHERE target = $1`, [target_player_name]);
+  const { player_name } = options;
+  return await db.any(`SELECT * FROM v_offers WHERE target = $1 OR source = $1`, [player_name]);
 };
 
 Trade.addOffer = async (options) => {

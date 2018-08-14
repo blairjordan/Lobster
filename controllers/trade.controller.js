@@ -17,10 +17,17 @@ controller.getOffers = async (req, res) => {
 
 controller.findOffers = async (req, res) => {
   try {
-    const { target_player_name } = req.body;
-    const offers = await Trade.findOffers({ target_player_name });
+    const { player_name } = req.body;
+    const offers = await Trade.findOffers({ player_name });
+
+    let retoffers = offers.reduce((previous, curr) => {
+      if (curr.source === player_name) { previous.source.push(curr); }
+      if (curr.target === player_name) { previous.target.push(curr); }
+      return previous;
+    }, {source: [], target: []});
+
     logger.info('sending offers found');
-    res.json(offers);
+    res.json(retoffers);
   }
   catch (err) {
     logger.error('Error finding offers- ' + err);
