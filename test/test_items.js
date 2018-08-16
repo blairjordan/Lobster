@@ -38,24 +38,12 @@ describe('Item model tests', () => {
 				done(e);
 			});
 	});
-
-	it('Deletes an item', (done) => {
-		const { item_id } = item;
-		Item.removeItem({ item_id })
-			.then(function (deletedCount) {
-				assert(deletedCount > 0);
-				done();
-			})
-			.catch(function (e) {
-				done(e);
-			});
-	});
 	
 	it('Creates a player item', (done) => {
 		const { item_id } = item;
-		Item.addPlayerItem({ 'player_name': 'blair', item_id, 'item_count': 3 })
-			.then(function (addedPlayer) {
-				assert(addedPlayer > 0);
+		Item.addPlayerItem({ player_name: 'blair', item_id, item_count: 3 })
+			.then(function (addedPlayerItem) {
+				assert(addedPlayerItem.player_item_id > 0);
 				done();
 			})
 			.catch(function (e) {
@@ -74,4 +62,17 @@ describe('Item model tests', () => {
 				done(e);
 			});
 	});
+
+	it('Deletes an item', (done) => {
+		const { item_id } = item;
+		Item.removeItem({ item_id })
+			.then(function (deletedCount) {
+				assert(deletedCount > 0);
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+	});
+
 });

@@ -34,17 +34,6 @@ Item.updateItem = async (options) => {
   });
 };
 
-Item.removeItem = async (options) => {
-  const {item_id} = options;
-  return db.result('DELETE FROM item WHERE item_id = $1', item_id)
-  .then(result => {
-    return result.rowCount;
-  })
-  .catch(error => {
-    throw error;
-  });
-};
-
 Item.addPlayerItem = async (options) => {
   const {player_name, item_id, item_count} = options;
   return db.one('INSERT INTO player_item(player_id, item_id, item_count) SELECT player_id, $2, $3 FROM player  WHERE username = $1 RETURNING player_item_id', [player_name, item_id, item_count])
@@ -70,5 +59,16 @@ Item.removePlayerItem = async (options) => {
   });
 };
 
+
+Item.removeItem = async (options) => {
+  const {item_id} = options;
+  return db.result('DELETE FROM item WHERE item_id = $1', item_id)
+  .then(result => {
+    return result.rowCount;
+  })
+  .catch(error => {
+    throw error;
+  });
+};
 
 export default Item;
