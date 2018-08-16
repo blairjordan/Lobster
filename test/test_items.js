@@ -50,4 +50,28 @@ describe('Item model tests', () => {
 				done(e);
 			});
 	});
+	
+	it('Creates a player item', (done) => {
+		const { item_id } = item;
+		Item.addPlayerItem({ 'player_name': 'blair', item_id, 'item_count': 3 })
+			.then(function (addedPlayer) {
+				assert(addedPlayer > 0);
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+	});
+		
+	it('Removes a player item', (done) => {
+		const { item_id } = item;
+		Item.removePlayerItem({ 'player_name': 'blair', item_id })
+			.then(function (addedPlayer) {
+				assert(addedPlayer > 0);
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+	});
 });
