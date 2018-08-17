@@ -37,7 +37,8 @@ Trade.addItem = async (options) => {
   const { source_player_name, target_player_name, item_id, quantity } = options;
   return db.one(`INSERT INTO offer_item(offer_id, item_id, item_count)
   SELECT o.offer_id, $3, $4 FROM offer o, player p1, player p2
-  WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id AND p1.username = $1 AND p2.username = $2`, [source_player_name, target_player_name, item_id, quantity])
+  WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id AND p1.username = $1 AND p2.username = $2
+  RETURNING offer_item_id`, [source_player_name, target_player_name, item_id, quantity])
   .then(id => {
     return id;
   })
@@ -60,7 +61,13 @@ Trade.addOffer = async (options) => {
 
 Trade.removeOffer = async (options) => {
   const { player_name } = options;
-  return db.result(`DELETE FROM offer WHERE offer_id IN (SELECT offer_id FROM offer o, player p WHERE p.username = $1 AND (source_id = p.player_id OR target_id = p.player_id))`, [player_name])
+  return db.result(`DELETE FROM offer_item WHERE offer_id IN (SELECT offer_id FROM offer o, player p WHERE p.username = $1 AND (source_id = p.player_id OR target_id = p.player_id))`, [player_name])
+  .then(result => {
+    if (result.rowCount === 0)
+      return result;
+
+    return db.result(`DELETE FROM offer WHERE offer_id IN (SELECT offer_id FROM offer o, player p WHERE p.username = $1 AND (source_id = p.player_id OR target_id = p.player_id))`, [player_name])
+  })
   .then(result => {
     return result.rowCount;
   })

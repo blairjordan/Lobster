@@ -59,7 +59,6 @@ Item.removePlayerItem = async (options) => {
   });
 };
 
-
 Item.removeItem = async (options) => {
   const {item_id} = options;
   return db.result('DELETE FROM item WHERE item_id = $1', item_id)
