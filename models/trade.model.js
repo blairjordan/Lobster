@@ -14,7 +14,9 @@ Trade.findOffers = async (options) => {
 Trade.setOfferStatus = async (options) => {
   const { source_player_name, target_player_name, status } = options;
 
-  return db.result(`UPDATE offer o SET target_status = $3 FROM player p1, player p2 
+  return db.result(`UPDATE offer o 
+    SET target_status = $3 
+    FROM player p1, player p2 
     WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id
     AND p1.username = $1
     AND p2.username = $2`, [source_player_name, target_player_name, status])
