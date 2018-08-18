@@ -18,7 +18,7 @@ controller.getOffers = async (req, res) => {
 controller.findOffers = async (req, res) => {
   try {
     const { player_name } = req.body;
-    const offers = await Trade.findOffers({ player_name });
+    const offers = await Trade.getOffersByPlayer({ player_name });
 
     let retoffers = offers.reduce((previous, curr) => {
       if (curr.source === player_name) { previous.source.push(curr); }
