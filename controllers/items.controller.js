@@ -15,6 +15,19 @@ controller.getAll = async (req, res) => {
   }
 };
 
+controller.getPlayerItems = async (req, res) => {
+  try {
+    const {player_name} = req.body;
+    const items = await Item.getPlayerItems({player_name});
+    logger.info('sending player itemss');
+    res.json(items);
+  }
+  catch (err) {
+    logger.error('Error fetching player items - ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.addItem = async (req, res) => {
   try {
     const {type, name, description} = req.body;

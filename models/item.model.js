@@ -34,6 +34,22 @@ Item.updateItem = async (options) => {
   });
 };
 
+Item.getPlayerItems = async (options) => {
+    const { player_name } = options;
+    return db.any(`
+    SELECT pi.player_item_id, p.player_id, i.name, i.description, pi.item_count, pi.created, pi.modified
+    FROM player_item pi, item i, player p
+    WHERE pi.item_id = i.item_id
+    AND pi.player_id = p.player_id
+    AND p.username = $1`, [player_name])
+    .then(items => {
+      return items;
+    })
+    .catch(error => {
+      throw error;
+    });
+};
+
 Item.addPlayerItem = async (options) => {
   const {player_name, item_id, item_count} = options;
   return db.one('INSERT INTO player_item(player_id, item_id, item_count) SELECT player_id, $2, $3 FROM player  WHERE username = $1 RETURNING player_item_id', [player_name, item_id, item_count])

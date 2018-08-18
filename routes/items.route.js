@@ -7,6 +7,10 @@ router.get('/all', function (req, res) {
   itemController.getAll(req, res);
 });
 
+router.post('/find', function (req, res) {
+  itemController.getPlayerItems(req, res);
+});
+
 router.post('/add', function (req, res) {
   itemController.addItem(req, res);
 });

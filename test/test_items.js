@@ -3,7 +3,9 @@ import Item from '../models/item.model';
 
 describe('Item model tests', () => {
 
-	let item = null;
+    let item = null,
+        testPlayerName = 'blair';
+
 	it('Creates an item', (done) => {
 		Item.addItem({ name: 'blowfish', type: 'fish', description: 'Poisonous puffer fish.' })
 			.then(function (itemAdded) {
@@ -18,6 +20,17 @@ describe('Item model tests', () => {
 
 	it('Retrieves all items', (done) => {
 		Item.getAll()
+			.then(function (data) {
+				assert(data.length > 0);
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+    });
+    
+	it('Retrieves a player\'s items', (done) => {
+		Item.getPlayerItems({ player_name: testPlayerName })
 			.then(function (data) {
 				assert(data.length > 0);
 				done();
