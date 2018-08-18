@@ -5,43 +5,35 @@ html
         include trade.css
     body
       | <h1>Trade</h1>
+      | <button id="refresh" type="button">Refresh</button>
+      | 
       | <div class="content">
       |   <div class="inventory">
       |     <h2>Your inventory</h2>
-      |     <div class="items">
-      |         <ul>
-      |           <a href=""><li>Item 1</li></a>
-      |           <a href=""><li>Item 2</li></a>
-      |           <a href=""><li>Item 3</li></a>
-      |         </ul>
+      |     <div id="inventory-items">
+      |         <ul />
       |     </div>
       |   </div>
       |   
       |   <div class="trade row">
       |     <div class="source column">
-      |       <h2>Offer</h2>
-      |       <div class="items">
-      |         <ul>
-      |           <li>Item 1</li>
-      |           <li>Item 2</li>
-      |           <li>Item 3</li>
-      |         </ul>
+      |       <h2>Offer <span id="my-offer-status">[P]</span></h2>
+      |       <div id="my-offer-items">
+      |           <ul />
       |       </div>
       |     </div>
       |     <div class="target column">
-      |       <h2>Their offer</h2>
-      |       <div class="items">
-      |         <ul>
-      |           <li>Item 1</li>
-      |           <li>Item 2</li>
-      |           <li>Item 3</li>
-      |         </ul>
+      |       <h2>Their offer <span id="their-offer-status">[P]</span></h2>
+      |       <div id="their-offer-items">
+      |           <ul />
       |       </div>
       |     </div>
       |   </div>
       | 
       |   <div class="action">
-      |     <button type="button">Accept</button>
-      |     <button type="decline">Decline</button>
+      |     <button id="accept" type="button">Accept</button>
+      |     <button id="decline" type="decline">Decline</button>
       |   </div>
       | </div>
+      script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+      script(src='../trade.js')

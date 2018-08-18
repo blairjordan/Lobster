@@ -23,7 +23,9 @@ INSERT INTO tile(x,y) VALUES (1,2);
 INSERT INTO tile(x,y) VALUES (0,-1);
 INSERT INTO tile(x,y) VALUES (-2,0);
 
-INSERT INTO player_item(player_id, item_id, item_count) VALUES (1,1,3);
+INSERT INTO player_item(player_id, item_id, item_count) VALUES (1,1,44);
 INSERT INTO player_item(player_id, item_id, item_count) VALUES (1,2,5);
-INSERT INTO player_item(player_id, item_id, item_count) VALUES (2,3,6);
+INSERT INTO player_item(player_id, item_id, item_count) VALUES (1,3,16);
+INSERT INTO player_item(player_id, item_id, item_count) VALUES (1,4,10);
+INSERT INTO player_item(player_id, item_id, item_count) VALUES (2,3,15);
 INSERT INTO player_item(player_id, item_id, item_count) VALUES (2,4,10);

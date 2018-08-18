@@ -77,6 +77,7 @@ SELECT
     p2.username as target,
     o.target_status,
     oi.item_count,
+    i.item_id,
     i.name
 FROM
     offer o,

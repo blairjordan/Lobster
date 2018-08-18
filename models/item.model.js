@@ -37,7 +37,7 @@ Item.updateItem = async (options) => {
 Item.getPlayerItems = async (options) => {
     const { player_name } = options;
     return db.any(`
-    SELECT pi.player_item_id, p.player_id, i.name, i.description, pi.item_count, pi.created, pi.modified
+    SELECT pi.player_item_id, p.player_id, i.item_id, i.name, i.description, pi.item_count, pi.created, pi.modified
     FROM player_item pi, item i, player p
     WHERE pi.item_id = i.item_id
     AND pi.player_id = p.player_id

@@ -35,7 +35,6 @@ Trade.addItem = async (options) => {
   // TODO: Precheck user has item
 
   // TODO: If item exists in the trade, replace it 
-
   const { source_player_name, target_player_name, item_id, quantity } = options;
   return db.one(`INSERT INTO offer_item(offer_id, item_id, item_count)
   SELECT o.offer_id, $3, $4 FROM offer o, player p1, player p2
