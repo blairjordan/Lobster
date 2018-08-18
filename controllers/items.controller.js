@@ -28,6 +28,32 @@ controller.getPlayerItems = async (req, res) => {
   }
 };
 
+controller.addPlayerItem = async (req, res) => {
+  try {
+    const {player_name, item_id, item_count} = req.body;
+    const player_item_id = await Item.addPlayerItem({player_name, item_id, item_count});
+    logger.info('adding player item');
+    res.json(player_item_id);
+  }
+  catch (err) {
+    logger.error('Error adding item- ' + err);
+    res.status(500).json(err);
+  }
+};
+
+controller.deletePlayerItem = async (req, res) => {
+  try {
+    const {player_name, item_id} = req.body;
+    const deletedCount = await Item.removePlayerItem({player_name, item_id});
+    logger.info('deleting player item');
+    res.json(deletedCount);
+  }
+  catch (err) {
+    logger.error('Error deleting player item- ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.addItem = async (req, res) => {
   try {
     const {type, name, description} = req.body;

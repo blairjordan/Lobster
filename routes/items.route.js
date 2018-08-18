@@ -15,6 +15,14 @@ router.post('/add', function (req, res) {
   itemController.addItem(req, res);
 });
 
+router.post('/add_player_item', function (req, res) {
+  itemController.addPlayerItem(req, res);
+});
+
+router.post('/delete_player_item', function (req, res) {
+  itemController.deletePlayerItem(req, res);
+});
+
 router.put('/update', function (req, res) {
   itemController.updateItem(req, res);
 });
