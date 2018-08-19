@@ -105,3 +105,42 @@ CREATE TRIGGER update_player_modtime BEFORE UPDATE ON player FOR EACH ROW EXECUT
 CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 CREATE TRIGGER update_tile_modtime BEFORE UPDATE ON tile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
+
+-- TODO: Finish
+CREATE OR REPLACE FUNCTION add_offer_item(
+	p_source_player_name player.username%TYPE, 
+	p_target_player_name player.username%TYPE, 
+	p_item_id item.item_id%TYPE, 
+	p_item_count player_item.item_count%TYPE) 
+RETURNS VARCHAR AS $$
+DECLARE
+  v_status VARCHAR := 'PENDING';
+  v_item_count NUMERIC;
+BEGIN
+	-- Return the qty of this item in player's inventory
+	SELECT COALESCE(SUM(pi.item_count), 0)
+	INTO v_item_count
+	FROM player_item pi, player p
+	WHERE item_id = p_item_id
+	AND p.player_id = pi.player_id
+	AND p.username = p_source_player_name;
+	
+	IF v_item_count > p_item_count THEN
+		INSERT INTO offer_item(offer_id, item_id, item_count)
+		SELECT o.offer_id, p_item_id, p_item_count 
+		FROM offer o, player p1, player p2
+		WHERE o.source_id = p1.player_id 
+		AND o.target_id = p2.player_id 
+		AND p1.username = p_source_player_name 
+		AND p2.username = p_target_player_name;
+		
+		v_status := 'COMPLETE';
+	ELSE
+		v_status := 'FAILED';
+	END IF;
+	
+	RETURN v_status;
+END;
+$$ LANGUAGE plpgsql;
+							
+-- TEST: add_offer_item('blair','matt',1,99);
