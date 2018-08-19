@@ -107,6 +107,7 @@ CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH 
 CREATE TRIGGER update_tile_modtime BEFORE UPDATE ON tile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
 -- TODO: Finish
+
 CREATE OR REPLACE FUNCTION add_offer_item(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 
@@ -124,6 +125,9 @@ BEGIN
 	WHERE item_id = p_item_id
 	AND p.player_id = pi.player_id
 	AND p.username = p_source_player_name;
+
+	-- TODO: Set the offer to OPEN for both parties, i.e., reset the state of the trade since the trade has changed
+	-- TODO: If item exists in the trade, replace it
 	
 	IF v_item_count > p_item_count THEN
 		INSERT INTO offer_item(offer_id, item_id, item_count)
@@ -134,7 +138,7 @@ BEGIN
 		AND p1.username = p_source_player_name 
 		AND p2.username = p_target_player_name;
 		
-		v_status := 'COMPLETE';
+		v_status := 'ADDED';
 	ELSE
 		v_status := 'FAILED';
 	END IF;
@@ -142,5 +146,20 @@ BEGIN
 	RETURN v_status;
 END;
 $$ LANGUAGE plpgsql;
+
 							
 -- TEST: add_offer_item('blair','matt',1,99);
+
+-- Confirm the transaction
+/* 
+UPDATE player_item pi
+SET item_count = pi.item_count - p_item_count
+FROM player p
+WHERE pi.item_id = p_item_id
+AND p.player_id = pi.player_id
+AND p.username = p_source_player_name;
+
+-- If the count == 0, remove it.
+
+-- Add to other player's inventory
+*/
