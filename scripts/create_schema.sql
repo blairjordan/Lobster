@@ -71,12 +71,14 @@ CREATE TABLE tile
   modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE VIEW v_offers AS
+CREATE OR REPLACE VIEW v_offers AS
 SELECT
-	p1.username as source,
+	  o.source_id as source_id,
+	  p1.username as source,
+	  o.target_id as target_id,
     p2.username as target,
     o.target_status,
-    oi.item_count,
+    SUM(oi.item_count) as item_count,
     i.item_id,
     i.name
 FROM
@@ -88,7 +90,8 @@ FROM
     WHERE p1.player_id = o.source_id
     AND p2.player_id = o.target_id
     AND o.offer_id = oi.offer_id
-    AND oi.item_id = i.item_id;
+    AND oi.item_id = i.item_id
+GROUP BY source_id, target_id, p1.username, p2.username, o.target_status, i.item_id, i.name;
 
 CREATE OR REPLACE FUNCTION update_modified_column()   
 RETURNS TRIGGER AS $$
@@ -106,8 +109,6 @@ CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH 
 
 CREATE TRIGGER update_tile_modtime BEFORE UPDATE ON tile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
--- TODO: Finish
-
 CREATE OR REPLACE FUNCTION add_offer_item(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 
@@ -116,50 +117,112 @@ CREATE OR REPLACE FUNCTION add_offer_item(
 RETURNS VARCHAR AS $$
 DECLARE
   v_status VARCHAR := 'PENDING';
-  v_item_count NUMERIC;
+  v_inventory_count NUMERIC;
+  v_offer_count NUMERIC;
 BEGIN
-	-- Return the qty of this item in player's inventory
-	SELECT COALESCE(SUM(pi.item_count), 0)
-	INTO v_item_count
-	FROM player_item pi, player p
-	WHERE item_id = p_item_id
-	AND p.player_id = pi.player_id
-	AND p.username = p_source_player_name;
-
-	-- TODO: Set the offer to OPEN for both parties, i.e., reset the state of the trade since the trade has changed
-	-- TODO: If item exists in the trade, replace it
-	
-	IF v_item_count > p_item_count THEN
-		INSERT INTO offer_item(offer_id, item_id, item_count)
-		SELECT o.offer_id, p_item_id, p_item_count 
-		FROM offer o, player p1, player p2
-		WHERE o.source_id = p1.player_id 
-		AND o.target_id = p2.player_id 
-		AND p1.username = p_source_player_name 
-		AND p2.username = p_target_player_name;
-		
-		v_status := 'ADDED';
+	IF p_item_count <= 0 THEN
+		v_status := 'ZERO_SPECIFIED';
 	ELSE
-		v_status := 'FAILED';
-	END IF;
-	
+		-- Return the qty of this item in player's inventory
+		SELECT COALESCE(SUM(pi.item_count), 0)
+		INTO v_inventory_count
+		FROM player_item pi, player p
+		WHERE item_id = p_item_id
+		AND p.player_id = pi.player_id
+		AND p.username = p_source_player_name;
+
+		IF v_inventory_count > p_item_count THEN
+			-- The number of these items already being offered
+			SELECT SUM(item_count)
+			INTO v_offer_count
+			FROM offer o, offer_item oi, player p1, player p2
+			WHERE o.offer_id = oi.offer_id
+			AND o.source_id = p1.player_id
+			AND oi.item_id = p_item_id
+			AND p1.username = p_source_player_name
+			AND p2.username = p_target_player_name;
+
+			IF (v_offer_count + p_item_count) > v_inventory_count THEN
+				v_status := 'INSUFFICIENT_INVENTORY';
+			ELSE
+				INSERT INTO offer_item(offer_id, item_id, item_count)
+				SELECT o.offer_id, p_item_id, p_item_count 
+				FROM offer o, player p1, player p2
+				WHERE o.source_id = p1.player_id 
+				AND o.target_id = p2.player_id 
+				AND p1.username = p_source_player_name 
+				AND p2.username = p_target_player_name;
+
+				-- Update offers to Open status
+				UPDATE offer o1
+				SET target_status = 'O'
+				WHERE EXISTS
+					(SELECT offer_id 
+					FROM offer o2, player p1, player p2
+					WHERE ((o2.source_id = p1.player_id AND o2.target_id = p2.player_id)
+						OR (o2.target_id = p1.player_id AND o2.source_id = p2.player_id))
+					AND p1.username = p_source_player_name
+					AND p2.username = p_target_player_name
+					AND o2.offer_id = o1.offer_id);
+
+				v_status := 'ADDED';
+			END IF;
+		ELSE
+			v_status := 'INSUFFICIENT_INVENTORY';
+		END IF;
+	END IF; -- End ZERO_SPECIFIED check
 	RETURN v_status;
 END;
 $$ LANGUAGE plpgsql;
 
-							
--- TEST: add_offer_item('blair','matt',1,99);
+CREATE OR REPLACE FUNCTION accept_offer(
+	p_source_player_name player.username%TYPE, 
+	p_target_player_name player.username%TYPE, 
+	p_status offer.target_status%TYPE) 
+RETURNS VARCHAR AS $$
+DECLARE
+  v_status VARCHAR := 'PENDING';
+  v_accepted_count NUMERIC;
+BEGIN
+	-- Confirm the transaction
+	UPDATE offer o 
+    SET target_status = p_status 
+    FROM player p1, player p2 
+    WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id
+    AND p1.username = p_source_player_name
+    AND p2.username = p_target_player_name;
 
--- Confirm the transaction
-/* 
-UPDATE player_item pi
-SET item_count = pi.item_count - p_item_count
-FROM player p
-WHERE pi.item_id = p_item_id
-AND p.player_id = pi.player_id
-AND p.username = p_source_player_name;
-
--- If the count == 0, remove it.
-
--- Add to other player's inventory
-*/
+	SELECT COUNT(*)
+	INTO v_accepted_count
+	FROM offer o, player p1, player p2
+	WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+		OR (o.target_id = p1.player_id AND o.source_id = p2.player_id))
+	AND p1.username = p_source_player_name
+	AND p2.username = p_target_player_name
+	AND target_status = 'A';
+			
+	-- If both sides accepted
+	IF v_accepted_count = 2 THEN
+		-- Insert new items to target inventories
+		INSERT INTO player_item(item_id, player_id, item_count)
+		SELECT item_id, target_id, item_count
+		FROM v_offers
+		WHERE ((source = p_source_player_name AND target = p_target_player_name)
+			  OR (source = p_target_player_name AND target = p_source_player_name));
+		
+		-- TODO: Update existing items in target inventories
+		-- TODO: Deduct items from source inventories
+		/*
+		UPDATE player_item pi
+		SET item_count = pi.item_count - p_item_count
+		FROM player p
+		WHERE pi.item_id = p_item_id
+		AND p.player_id = pi.player_id
+		AND p.username = p_source_player_name;
+		*/ 
+		-- TODO: Remove zero count items from inventories
+		-- TODO: Write transaction to ledger
+	END IF;
+	RETURN v_status;
+END;
+$$ LANGUAGE plpgsql;

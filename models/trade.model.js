@@ -31,12 +31,9 @@ Trade.setOfferStatus = async (options) => {
 Trade.addItem = async (options) => {
 
   const { source_player_name, target_player_name, item_id, quantity } = options;
-  return db.one(`INSERT INTO offer_item(offer_id, item_id, item_count)
-  SELECT o.offer_id, $3, $4 FROM offer o, player p1, player p2
-  WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id AND p1.username = $1 AND p2.username = $2
-  RETURNING offer_item_id`, [source_player_name, target_player_name, item_id, quantity])
-  .then(id => {
-    return id;
+  return db.one(`SELECT add_offer_item($1,$2,$3,$4)`, [source_player_name, target_player_name, item_id, quantity])
+  .then(status => {
+    return status.add_offer_item;
   })
   .catch(error => {
     throw error;

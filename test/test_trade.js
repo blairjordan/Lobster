@@ -21,8 +21,8 @@ describe('Trade model tests', () => {
 
     it('Adds a trade offer item', (done) => {
         Trade.addItem({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, item_id: testItemId, quantity: 10 })
-            .then(function (addedOfferItem) {
-                assert(addedOfferItem.offer_item_id > 0);
+            .then(function (status) {
+                assert(status === 'ADDED');
                 done();
             })
             .catch(function (e) {

@@ -1,81 +1,102 @@
-const player = 'blair';
-const target = 'matt';
+const player = "blair";
+const target = "matt";
 
-const populateItems = (list,items,type = '') => {
-    items.forEach(i => {
-    list.append(`<li><a href="#"><span>${i.name} (item_id: ${i.item_id})</a></span> - qty: ${i.item_count} ${type==='offer'?'<a href="#">[-]</a></li>':''} ${type==='inventory'?'<a href="#">[+]</a></li>':''}`);
-    });
+const populateItems = (list, items, type = "") => {
+  items.forEach(i => {
+    list.append(
+      `<li class="inventory-item" data-item-id="${i.item_id}"><a href="#"><span>${i.name} (item_id: ${
+        i.item_id
+      })</a></span> - qty: ${i.item_count} ${
+        type === "offer" ? `<a class="remove-item"  href="#">[-]</a></li>` : ""
+      } ${type === "inventory" ? `<a class="add-item" href="#">[+]</a></li>` : ""}`
+    );
+  });
 };
 
 const updateStatus = (field, items) => {
   field.empty();
-  if (items.length > 0)
-    field.append(status, `[${items[0].target_status}]`);
+  if (items.length > 0) field.append(status, `[${items[0].target_status}]`);
 };
 
 const getInventory = () => {
   $.ajax({
-    url:   'http://localhost:3000/items/find',
-    data: { 'player_name' : player },
-    method: 'POST'
-  })
-  .done(function( items ) {
-    populateItems($('#inventory-items ul'), items, 'inventory');
+    url: "http://localhost:3000/items/find",
+    data: { player_name: player },
+    method: "POST"
+  }).done(function(items) {
+    populateItems($("#inventory-items ul"), items, "inventory");
   });
 };
 
 const getOffers = () => {
   $.ajax({
-    url: 'http://localhost:3000/trade/find',
-    data: { 'player_name' : player },
-    method: 'POST'
-  })
-  .done(function( data ) {
-    console.log( data );
+    url: "http://localhost:3000/trade/find",
+    data: { player_name: player },
+    method: "POST"
+  }).done(function(data) {
     if (data) {
-      populateItems($('#my-offer-items ul'), data.source, 'offer');
-      populateItems($('#their-offer-items ul'), data.target);
-      updateStatus($('#their-offer-status'), data.target);
+      populateItems($("#my-offer-items ul"), data.source, "offer");
+      populateItems($("#their-offer-items ul"), data.target);
+      updateStatus($("#their-offer-status"), data.target);
     }
   });
 };
 
-const setOfferStatus = (source,target,status) => {
+const setOfferStatus = (source, target, status) => {
   $.ajax({
-    url: 'http://localhost:3000/trade/update',
-    data: { 'source_player_name' : source,
-            'target_player_name' : target,
-            'status' : status },
-    method: 'POST'
-  })
-  .done(function( data ) {
-    console.log( data );
+    url: "http://localhost:3000/trade/update",
+    data: {
+      source_player_name: source,
+      target_player_name: target,
+      status: status
+    },
+    method: "POST"
+  }).done(function(data) {
+    console.log(data);
   });
-  
+};
+
+const addOfferItem = (source, target, item_id, quantity) => {
+  $.ajax({
+    url: "http://localhost:3000/trade/add_item",
+    data: {
+      source_player_name: source,
+      target_player_name: target,
+      item_id,
+      quantity
+    },
+    method: "POST"
+  }).done(function(data) {
+    refresh();
+  });
 };
 
 const acceptOffer = () => {
-  setOfferStatus(target,player,'A');
-  refresh();
+  setOfferStatus(target, player, "A");
 };
 
 const refresh = () => {
-  $('#inventory-items ul').empty();
-  $('#my-offer-items ul').empty();
-  $('#their-offer-items ul').empty();
-  
+  $("#inventory-items ul").empty();
+  $("#my-offer-items ul").empty();
+  $("#their-offer-items ul").empty();
+
   getInventory();
   getOffers();
 };
 
-$( document ).ready(function() {
-  refresh();  
-});
-  
-$('#refresh').click(() => {
+$(document).ready(function() {
   refresh();
 });
 
-$('#accept').on('click', () => {
+$("#refresh").on("click", () => {
+  refresh();
+});
+
+$("#accept").on("click", () => {
   acceptOffer();
+});
+
+$(document).on('click', ".inventory-item .add-item", e => {
+  let item_id = $(e.target.parentNode).data("itemId");
+  addOfferItem(player, target, item_id, 1);
 });

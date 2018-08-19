@@ -19,7 +19,7 @@ controller.getPlayerItems = async (req, res) => {
   try {
     const {player_name} = req.body;
     const items = await Item.getPlayerItems({player_name});
-    logger.info('sending player itemss');
+    logger.info('sending player items');
     res.json(items);
   }
   catch (err) {
