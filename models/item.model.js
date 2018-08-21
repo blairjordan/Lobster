@@ -13,7 +13,7 @@ Item.getAll = async () => {
 };
 
 Item.addItem = async (options) => {
-  const {type, name, description} = options;
+  const { type, name, description } = options;
   return db.one('INSERT INTO item(item_type_id, name, description) SELECT t.item_type_id, $2, $3 FROM item_type t WHERE t.name = $1 RETURNING item_id', [type, name, description])
   .then(id => {
     return id;

@@ -149,8 +149,8 @@ BEGIN
 				SELECT o.offer_id, p_item_id, p_item_count 
 				FROM offer o, player p1, player p2
 				WHERE o.source_id = p1.player_id 
-				AND o.target_id = p2.player_id 
-				AND p1.username = p_source_player_name 
+				AND o.target_id = p2.player_id
+				AND p1.username = p_source_player_name
 				AND p2.username = p_target_player_name;
 
 				-- Update offers to Open status
@@ -175,7 +175,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION accept_offer(
+CREATE OR REPLACE FUNCTION set_offer(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 
 	p_status offer.target_status%TYPE) 
@@ -186,11 +186,13 @@ DECLARE
 BEGIN
 	-- Confirm the transaction
 	UPDATE offer o 
-    SET target_status = p_status 
-    FROM player p1, player p2 
-    WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id
-    AND p1.username = p_source_player_name
-    AND p2.username = p_target_player_name;
+  SET target_status = p_status 
+  FROM player p1, player p2 
+  WHERE o.source_id = p1.player_id AND o.target_id = p2.player_id
+  AND p1.username = p_source_player_name
+  AND p2.username = p_target_player_name;
+    
+  v_status := 'STATUS_UPDATED';
 
 	SELECT COUNT(*)
 	INTO v_accepted_count
@@ -203,14 +205,28 @@ BEGIN
 			
 	-- If both sides accepted
 	IF v_accepted_count = 2 THEN
-		-- Insert new items to target inventories
-		INSERT INTO player_item(item_id, player_id, item_count)
-		SELECT item_id, target_id, item_count
-		FROM v_offers
+    
+		-- Update existing items in target inventories
+    UPDATE player_item pi
+    SET item_count = pi.item_count + o.item_count
+    FROM v_offers o
 		WHERE ((source = p_source_player_name AND target = p_target_player_name)
-			  OR (source = p_target_player_name AND target = p_source_player_name));
+      	OR (source = p_target_player_name AND target = p_source_player_name))
+    AND pi.player_id = o.target_id
+    AND pi.item_id = o.item_id;
+        
+		-- Insert new items to target inventories
+		-- Don't include items that have already been updated
+        INSERT INTO player_item (item_id, player_id, item_count)
+		SELECT o.item_id, o.target_id, o.item_count
+		FROM v_offers o
+		WHERE ((source = p_source_player_name AND target = p_target_player_name)
+    	OR (source = p_target_player_name AND target = p_source_player_name))
+    AND NOT EXISTS 
+    (SELECT 1 FROM player_item
+    	WHERE player_id = o.target_id
+    	AND item_id = o.item_id);
 		
-		-- TODO: Update existing items in target inventories
 		-- TODO: Deduct items from source inventories
 		/*
 		UPDATE player_item pi
@@ -219,7 +235,8 @@ BEGIN
 		WHERE pi.item_id = p_item_id
 		AND p.player_id = pi.player_id
 		AND p.username = p_source_player_name;
-		*/ 
+		*/
+        
 		-- TODO: Remove zero count items from inventories
 		-- TODO: Write transaction to ledger
 	END IF;

@@ -3,10 +3,6 @@ var fs = require('fs');
 
 // TODO:
 // Disambiguate width and height from pixels .. change to (hcount,vcount)?
-// Consolidate "stitch" and "generate" .. use options and pass global conf
-// .. Will get a better idea of this once endpoint implemented
-
-//const {xMax,xMin,yMax,yMin} = input.size; 
 
 const tileExists = (tiles,x,y) => tiles.find(t => (t.x === x) && (t.y === y) );
 
