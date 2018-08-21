@@ -1,5 +1,5 @@
-const player = "blair";
-const target = "matt";
+let player = '';
+let target = '';
 
 const populateItems = (list, items, type = "") => {
   items.forEach(i => {
@@ -8,7 +8,7 @@ const populateItems = (list, items, type = "") => {
         i.item_id
       })</a></span> - qty: ${i.item_count} ${
         type === "offer" ? `<a class="remove-item"  href="#">[-]</a></li>` : ""
-      } ${type === "inventory" ? `<a class="add-item" href="#">[+]</a></li>` : ""}`
+      } ${type === "inventory" ? `<input class="qty" type="text" /><a class="add-item" href="#">[+]</a></li>` : ""}`
     );
   });
 };
@@ -37,6 +37,7 @@ const getOffers = () => {
     if (data) {
       populateItems($("#my-offer-items ul"), data.source, "offer");
       populateItems($("#their-offer-items ul"), data.target);
+      updateStatus($("#my-offer-status"), data.source);
       updateStatus($("#their-offer-status"), data.target);
     }
   });
@@ -66,7 +67,9 @@ const addOfferItem = (source, target, item_id, quantity) => {
       quantity
     },
     method: "POST"
-  }).done(function(data) {
+  }).done(function(status) {
+    if (status !== 'ADDED')
+       alert(status);
     refresh();
   });
 };
@@ -79,7 +82,6 @@ const refresh = () => {
   $("#inventory-items ul").empty();
   $("#my-offer-items ul").empty();
   $("#their-offer-items ul").empty();
-
   getInventory();
   getOffers();
 };
@@ -98,5 +100,10 @@ $("#accept").on("click", () => {
 
 $(document).on('click', ".inventory-item .add-item", e => {
   let item_id = $(e.target.parentNode).data("itemId");
-  addOfferItem(player, target, item_id, 1);
+  let qty =  $(e.target.parentNode).children('input.qty').val();
+  
+  addOfferItem(player, target, item_id, qty);
 });
+
+$('#player').on('change', () => {player = $('#player').val();}); 
+$('#target').on('change', () => {target = $('#target').val();}); 

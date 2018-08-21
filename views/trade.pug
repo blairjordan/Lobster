@@ -5,6 +5,11 @@ html
         include trade.css
     body
       | <h1>Trade</h1>
+      | <div>
+      |   Your username: <input id="player" type="text" />
+      |   Target username: <input id="target" type="text" />
+      | </div>
+      | <br />
       | <button id="refresh" type="button">Refresh</button>
       | 
       | <div class="content">
@@ -17,13 +22,13 @@ html
       |   
       |   <div class="trade row">
       |     <div class="source column">
-      |       <h2>Offer <span id="my-offer-status">[P]</span></h2>
+      |       <h2>Offer <span id="my-offer-status"></span></h2>
       |       <div id="my-offer-items">
       |           <ul />
       |       </div>
       |     </div>
       |     <div class="target column">
-      |       <h2>Their offer <span id="their-offer-status">[P]</span></h2>
+      |       <h2>Their offer <span id="their-offer-status"</span></h2>
       |       <div id="their-offer-items">
       |           <ul />
       |       </div>

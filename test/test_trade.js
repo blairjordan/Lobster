@@ -42,9 +42,9 @@ describe('Trade model tests', () => {
     });
 
     it('Updates a player', (done) => {
-        Trade.setOfferStatus({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, status: 'A' })
-            .then(function (updatedCount) {
-                assert(updatedCount > 0);
+        Trade.setOfferStatus({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, status: 'O' })
+            .then(function (status) {
+                assert(status === 'STATUS_UPDATED');
                 done();
             })
             .catch(function (e) {

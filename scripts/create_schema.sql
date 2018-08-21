@@ -1,4 +1,3 @@
-
 DROP TABLE IF EXISTS offer_item CASCADE;
 DROP TABLE IF EXISTS player_item CASCADE;
 DROP TABLE IF EXISTS offer CASCADE;
@@ -6,6 +5,8 @@ DROP TABLE IF EXISTS player CASCADE;
 DROP TABLE IF EXISTS item CASCADE;
 DROP TABLE IF EXISTS item_type CASCADE;
 DROP TABLE IF EXISTS tile CASCADE;
+
+DROP VIEW IF EXISTS v_offers;
 
 CREATE TABLE item_type
 (
@@ -72,26 +73,22 @@ CREATE TABLE tile
 );
 
 CREATE OR REPLACE VIEW v_offers AS
-SELECT
-	  o.source_id as source_id,
-	  p1.username as source,
-	  o.target_id as target_id,
-    p2.username as target,
+SELECT o.source_id,
+		o.offer_id,
+    p1.username AS source,
+    o.target_id,
+    p2.username AS target,
     o.target_status,
-    SUM(oi.item_count) as item_count,
+    sum(oi.item_count) AS item_count,
     i.item_id,
     i.name
-FROM
-    offer o,
-    offer_item oi, 
-    item i, 
+  FROM offer o,
+    offer_item oi,
+    item i,
     player p1,
     player p2
-    WHERE p1.player_id = o.source_id
-    AND p2.player_id = o.target_id
-    AND o.offer_id = oi.offer_id
-    AND oi.item_id = i.item_id
-GROUP BY source_id, target_id, p1.username, p2.username, o.target_status, i.item_id, i.name;
+  WHERE p1.player_id = o.source_id AND p2.player_id = o.target_id AND o.offer_id = oi.offer_id AND oi.item_id = i.item_id
+  GROUP BY o.offer_id, o.source_id, o.target_id, p1.username, p2.username, o.target_status, i.item_id, i.name;
 
 CREATE OR REPLACE FUNCTION update_modified_column()   
 RETURNS TRIGGER AS $$
@@ -120,7 +117,7 @@ DECLARE
   v_inventory_count NUMERIC;
   v_offer_count NUMERIC;
 BEGIN
-	IF p_item_count <= 0 THEN
+	IF p_item_count < 0 THEN
 		v_status := 'ZERO_SPECIFIED';
 	ELSE
 		-- Return the qty of this item in player's inventory
@@ -207,38 +204,69 @@ BEGIN
 	IF v_accepted_count = 2 THEN
     
 		-- Update existing items in target inventories
-    UPDATE player_item pi
-    SET item_count = pi.item_count + o.item_count
-    FROM v_offers o
+		UPDATE player_item pi
+		SET item_count = pi.item_count + o.item_count
+		FROM v_offers o
 		WHERE ((source = p_source_player_name AND target = p_target_player_name)
-      	OR (source = p_target_player_name AND target = p_source_player_name))
-    AND pi.player_id = o.target_id
-    AND pi.item_id = o.item_id;
-        
+				OR (source = p_target_player_name AND target = p_source_player_name))
+		AND pi.player_id = o.target_id
+		AND pi.item_id = o.item_id;
+					
 		-- Insert new items to target inventories
 		-- Don't include items that have already been updated
-        INSERT INTO player_item (item_id, player_id, item_count)
+		INSERT INTO player_item (item_id, player_id, item_count)
 		SELECT o.item_id, o.target_id, o.item_count
 		FROM v_offers o
 		WHERE ((source = p_source_player_name AND target = p_target_player_name)
-    	OR (source = p_target_player_name AND target = p_source_player_name))
-    AND NOT EXISTS 
-    (SELECT 1 FROM player_item
-    	WHERE player_id = o.target_id
-    	AND item_id = o.item_id);
+				OR (source = p_target_player_name AND target = p_source_player_name))
+				AND NOT EXISTS 
+				(SELECT 1 FROM player_item
+				WHERE player_id = o.target_id
+				AND item_id = o.item_id);
 		
 		-- TODO: Deduct items from source inventories
-		/*
 		UPDATE player_item pi
-		SET item_count = pi.item_count - p_item_count
-		FROM player p
-		WHERE pi.item_id = p_item_id
-		AND p.player_id = pi.player_id
-		AND p.username = p_source_player_name;
-		*/
-        
-		-- TODO: Remove zero count items from inventories
+		SET item_count = pi.item_count - o.item_count
+		FROM v_offers o
+			WHERE ((source = p_source_player_name AND target = p_target_player_name)
+			OR (source = p_target_player_name AND target = p_source_player_name))
+		AND pi.player_id = o.source_id
+		AND pi.item_id = o.item_id;
+				
+		-- Remove zero count items from inventories
+		DELETE FROM player_item pi
+		WHERE player_item_id 
+		IN
+		(SELECT player_item_id 
+		FROM v_offers o
+				WHERE ((source = p_source_player_name AND target = p_target_player_name)
+				OR (source = p_target_player_name AND target = p_source_player_name))
+		AND pi.player_id = o.source_id
+		AND pi.item_id = o.item_id)
+		AND item_count = 0;
+				
 		-- TODO: Write transaction to ledger
+
+		-- Remove offer items 
+        DELETE
+        FROM offer_item
+        WHERE offer_id
+        IN
+        (SELECT offer_id FROM v_offers
+        WHERE ((source = p_source_player_name AND target = p_target_player_name)
+        OR (source = p_target_player_name AND target = p_source_player_name))
+        );
+        
+        -- Remove offers
+        DELETE
+        FROM offer
+        WHERE offer_id
+        IN
+        (SELECT offer_id FROM v_offers
+        WHERE ((source = p_source_player_name AND target = p_target_player_name)
+        OR (source = p_target_player_name AND target = p_source_player_name))
+        );
+
 	END IF;
 	RETURN v_status;
 END;
