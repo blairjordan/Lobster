@@ -8,6 +8,10 @@ router.get('/', function (req, res) {
   res.render('trade');
 });
 
+router.post('/add_offer', function(req, res) {
+  tradeController.addOffer(req, res);
+});
+
 router.post('/find', function (req, res) {
   tradeController.findOffers(req, res);
 });

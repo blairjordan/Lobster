@@ -10,8 +10,8 @@ describe('Trade model tests', () => {
 
     it('Creates an offer', (done) => {
         Trade.addOffer({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName })
-            .then(function (addedOffer) {
-                assert(addedOffer.offer_id > 0);
+            .then(function (status) {
+                assert(status === 'OFFER_ADDED' || status === 'OFFER_ALREADY_OPEN');
                 done();
             })
             .catch(function (e) {

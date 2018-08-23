@@ -35,15 +35,28 @@ controller.findOffers = async (req, res) => {
   }
 };
 
+controller.addOffer = async (req, res) => {
+  try {
+    const { source_player_name, target_player_name } = req.body;
+    const addOfferStatus = await Trade.addOffer({ source_player_name, target_player_name, status: 'O' });
+    logger.info('Sending add offer status');
+    res.json(addOfferStatus);
+
+  } catch (err) {
+    logger.error('Error adding offer- ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.setOfferStatus = async (req, res) => {
   try {
     const { source_player_name, target_player_name, status } = req.body;
-    const updatedCount = await Trade.setOfferStatus({ source_player_name, target_player_name, status });
-    logger.info('updating offer status');
-    res.json(updatedCount);
+    const updateOfferStatus = await Trade.setOfferStatus({ source_player_name, target_player_name, status });
+    logger.info('Sending set offer status');
+    res.json(updateOfferStatus);
 
   } catch (err) {
-    logger.error('Error accepting offer- ' + err);
+    logger.error('Error setting offer status - ' + err);
     res.status(500).json(err);
   }
 };
@@ -60,6 +73,5 @@ controller.addItem = async (req, res) => {
     res.status(500).json(err);
   }
 };
-
 
 export default controller;

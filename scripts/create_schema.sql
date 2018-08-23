@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS item CASCADE;
 DROP TABLE IF EXISTS item_type CASCADE;
 DROP TABLE IF EXISTS tile CASCADE;
 
-DROP VIEW IF EXISTS v_offers;
+DROP VIEW IF EXISTS v_offer;
 
 CREATE TABLE item_type
 (
@@ -72,7 +72,7 @@ CREATE TABLE tile
   modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE OR REPLACE VIEW v_offers AS
+CREATE OR REPLACE VIEW v_offer AS
 SELECT o.source_id,
 		o.offer_id,
     p1.username AS source,
@@ -110,14 +110,26 @@ CREATE OR REPLACE FUNCTION add_offer_item(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 
 	p_item_id item.item_id%TYPE, 
-	p_item_count player_item.item_count%TYPE) 
+	p_item_count player_item.item_count%TYPE)
 RETURNS VARCHAR AS $$
 DECLARE
   v_status VARCHAR := 'PENDING';
   v_inventory_count NUMERIC;
   v_offer_count NUMERIC;
+  v_offer_item_count NUMERIC;
 BEGIN
-	IF p_item_count < 0 THEN
+
+	SELECT COUNT(*)
+    INTO v_offer_count 
+    FROM offer o, player p1, player p2
+    WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+      OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
+    AND p1.username = p_source_player_name
+    AND p2.username = p_target_player_name;
+  
+    IF v_offer_count = 0 THEN
+		v_status := 'NO_OFFER';
+    ELSIF p_item_count < 0 THEN
 		v_status := 'ZERO_SPECIFIED';
 	ELSE
 		-- Return the qty of this item in player's inventory
@@ -131,7 +143,7 @@ BEGIN
 		IF v_inventory_count > p_item_count THEN
 			-- The number of these items already being offered
 			SELECT SUM(item_count)
-			INTO v_offer_count
+			INTO v_offer_item_count
 			FROM offer o, offer_item oi, player p1, player p2
 			WHERE o.offer_id = oi.offer_id
 			AND o.source_id = p1.player_id
@@ -139,7 +151,7 @@ BEGIN
 			AND p1.username = p_source_player_name
 			AND p2.username = p_target_player_name;
 
-			IF (v_offer_count + p_item_count) > v_inventory_count THEN
+			IF (v_offer_item_count + p_item_count) > v_inventory_count THEN
 				v_status := 'INSUFFICIENT_INVENTORY';
 			ELSE
 				INSERT INTO offer_item(offer_id, item_id, item_count)
@@ -165,6 +177,7 @@ BEGIN
 				v_status := 'ADDED';
 			END IF;
 		ELSE
+        	RAISE NOTICE '% <= %', v_inventory_count, p_item_count;
 			v_status := 'INSUFFICIENT_INVENTORY';
 		END IF;
 	END IF; -- End ZERO_SPECIFIED check
@@ -206,7 +219,7 @@ BEGIN
 		-- Update existing items in target inventories
 		UPDATE player_item pi
 		SET item_count = pi.item_count + o.item_count
-		FROM v_offers o
+		FROM v_offer o
 		WHERE ((source = p_source_player_name AND target = p_target_player_name)
 				OR (source = p_target_player_name AND target = p_source_player_name))
 		AND pi.player_id = o.target_id
@@ -216,7 +229,7 @@ BEGIN
 		-- Don't include items that have already been updated
 		INSERT INTO player_item (item_id, player_id, item_count)
 		SELECT o.item_id, o.target_id, o.item_count
-		FROM v_offers o
+		FROM v_offer o
 		WHERE ((source = p_source_player_name AND target = p_target_player_name)
 				OR (source = p_target_player_name AND target = p_source_player_name))
 				AND NOT EXISTS 
@@ -224,10 +237,10 @@ BEGIN
 				WHERE player_id = o.target_id
 				AND item_id = o.item_id);
 		
-		-- TODO: Deduct items from source inventories
+		-- Deduct items from source inventories
 		UPDATE player_item pi
 		SET item_count = pi.item_count - o.item_count
-		FROM v_offers o
+		FROM v_offer o
 			WHERE ((source = p_source_player_name AND target = p_target_player_name)
 			OR (source = p_target_player_name AND target = p_source_player_name))
 		AND pi.player_id = o.source_id
@@ -238,7 +251,7 @@ BEGIN
 		WHERE player_item_id 
 		IN
 		(SELECT player_item_id 
-		FROM v_offers o
+		FROM v_offer o
 				WHERE ((source = p_source_player_name AND target = p_target_player_name)
 				OR (source = p_target_player_name AND target = p_source_player_name))
 		AND pi.player_id = o.source_id
@@ -252,21 +265,61 @@ BEGIN
         FROM offer_item
         WHERE offer_id
         IN
-        (SELECT offer_id FROM v_offers
+        (SELECT offer_id FROM v_offer
         WHERE ((source = p_source_player_name AND target = p_target_player_name)
         OR (source = p_target_player_name AND target = p_source_player_name))
         );
         
         -- Remove offers
-        DELETE
-        FROM offer
-        WHERE offer_id
-        IN
-        (SELECT offer_id FROM v_offers
-        WHERE ((source = p_source_player_name AND target = p_target_player_name)
-        OR (source = p_target_player_name AND target = p_source_player_name))
-        );
+				DELETE FROM offer
+				WHERE offer_id IN
+				(
+				SELECT offer_id
+				FROM offer o, player p1, player p2
+				WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+						OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
+				AND p1.username = p_source_player_name
+				AND p2.username = p_target_player_name);
 
+	END IF;
+	RETURN v_status;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION add_offer(
+	p_player1_name player.username%TYPE, 
+	p_player2_name player.username%TYPE, 
+	p_status offer.target_status%TYPE) 
+RETURNS VARCHAR AS $$
+DECLARE
+  v_status VARCHAR := 'PENDING';
+  v_offer_count NUMERIC;
+BEGIN
+	-- Confirm the transaction
+	SELECT COUNT(*)
+    INTO v_offer_count 
+  FROM offer o, player p1, player p2
+  WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+      OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
+  AND p1.username = p_player1_name
+  AND p2.username = p_player2_name;
+    
+	IF v_offer_count > 0 THEN
+  		v_status := 'OFFER_ALREADY_OPEN';
+    ELSE 
+    	-- Open a new trade between two players
+		INSERT INTO offer(source_id, target_id, target_status) 
+        SELECT p1.player_id, p2.player_id, p_status
+        FROM player p1, player p2 
+        WHERE p1.username = p_player1_name AND p2.username = p_player2_name;
+        
+		INSERT INTO offer(source_id, target_id, target_status) 
+        SELECT p1.player_id, p2.player_id, p_status
+        FROM player p1, player p2 
+        WHERE p1.username = p_player2_name AND p2.username = p_player1_name;
+        
+  		v_status := 'OFFER_ADDED';
+		
 	END IF;
 	RETURN v_status;
 END;
