@@ -8,6 +8,11 @@ DROP TABLE IF EXISTS tile CASCADE;
 
 DROP VIEW IF EXISTS v_offer;
 
+DROP FUNCTION IF EXISTS update_modified_column;
+DROP FUNCTION IF EXISTS add_offer;
+DROP FUNCTION IF EXISTS add_offer_item;
+DROP FUNCTION IF EXISTS set_offer;
+
 CREATE TABLE item_type
 (
   item_type_id  BIGSERIAL PRIMARY KEY,
