@@ -7,6 +7,10 @@ router.get('/all', function (req, res) {
   itemController.getAll(req, res);
 });
 
+router.get('/types', function (req, res) {
+  itemController.getTypes(req, res);
+});
+
 router.post('/find', function (req, res) {
   itemController.getPlayerItems(req, res);
 });
@@ -19,7 +23,7 @@ router.post('/add_player_item', function (req, res) {
   itemController.addPlayerItem(req, res);
 });
 
-router.post('/delete_player_item', function (req, res) {
+router.delete('/delete_player_item', function (req, res) {
   itemController.deletePlayerItem(req, res);
 });
 

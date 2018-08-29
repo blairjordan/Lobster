@@ -29,6 +29,17 @@ describe('Item model tests', () => {
 			});
     });
     
+	it('Retrieves all item types', (done) => {
+		Item.getTypes()
+			.then(function (data) {
+				assert(data.length > 0);
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+	});
+		
 	it('Retrieves a player\'s items', (done) => {
 		Item.getPlayerItems({ player_name: testPlayerName })
 			.then(function (data) {

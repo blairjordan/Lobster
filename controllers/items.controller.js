@@ -15,6 +15,18 @@ controller.getAll = async (req, res) => {
   }
 };
 
+controller.getTypes = async (req, res) => {
+  try {
+    const types = await Item.getTypes();
+    logger.info('sending all item types');
+    res.json(types);
+  }
+  catch (err) {
+    logger.error('Error in getting item types- ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.getPlayerItems = async (req, res) => {
   try {
     const {player_name} = req.body;

@@ -3,7 +3,17 @@ import {db} from '../db/connect';
 let Item = {};
 
 Item.getAll = async () => {
-  return db.any(`SELECT * FROM item`)
+  return db.any(`SELECT i.item_id, i.name, i.description, i.created, i.modified, t.item_type_id, t.name AS item_type_name, t.description AS item_type_description FROM item i, item_type t WHERE i.item_type_id = t.item_type_id`)
+  .then(items => {
+    return items;
+  })
+  .catch(error => {
+    throw error;
+  });
+};
+
+Item.getTypes = async () => {
+  return db.any(`SELECT * FROM item_type`)
   .then(items => {
     return items;
   })
