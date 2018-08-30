@@ -45,16 +45,10 @@ Trade.addOffer = async (options) => {
 };
 
 Trade.removeOffer = async (options) => {
-  const { player_name } = options;
-  return db.result(`DELETE FROM offer_item WHERE offer_id IN (SELECT offer_id FROM offer o, player p WHERE p.username = $1 AND (source_id = p.player_id OR target_id = p.player_id))`, [player_name])
+  const { source_player_name, target_player_name } = options;
+  return db.one(`SELECT remove_offer($1,$2)`, [source_player_name, target_player_name])
   .then(result => {
-    if (result.rowCount === 0)
-      return result;
-
-    return db.result(`DELETE FROM offer WHERE offer_id IN (SELECT offer_id FROM offer o, player p WHERE p.username = $1 AND (source_id = p.player_id OR target_id = p.player_id))`, [player_name])
-  })
-  .then(result => {
-    return result.rowCount;
+    return result;
   })
   .catch(error => {
     throw error;

@@ -12,6 +12,10 @@ router.post('/add_offer', function(req, res) {
   tradeController.addOffer(req, res);
 });
 
+router.post('/remove_offer', function(req, res) {
+  tradeController.removeOffer(req, res);
+});
+
 router.post('/find', function (req, res) {
   tradeController.findOffers(req, res);
 });

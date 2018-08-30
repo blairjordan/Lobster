@@ -209,23 +209,23 @@ BEGIN
     );
     
     -- Remove offers
-	WITH o AS (DELETE FROM offer
-        WHERE offer_id IN
-        (
-            SELECT offer_id
-            FROM offer o, player p1, player p2
-            WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
-                OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
-            AND p1.username = p_player1_name
-            AND p2.username = p_player2_name) RETURNING 1)
-	SELECT COUNT(*) INTO v_deleted_count FROM o;
+		WITH o AS (DELETE FROM offer
+					WHERE offer_id IN
+					(
+							SELECT offer_id
+							FROM offer o, player p1, player p2
+							WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+									OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
+							AND p1.username = p_player1_name
+							AND p2.username = p_player2_name) RETURNING 1)
+		SELECT COUNT(*) INTO v_deleted_count FROM o;
 
 	IF v_deleted_count > 0 THEN
   		v_status := 'REMOVED';
+	ELSE
+  	v_status := 'NO_CHANGES';
 	END IF;
     
-  	v_status := 'NO_CHANGES';
-  
 	RETURN v_status;
 END;
 $$ LANGUAGE plpgsql;

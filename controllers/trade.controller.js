@@ -48,6 +48,19 @@ controller.addOffer = async (req, res) => {
   }
 };
 
+controller.removeOffer = async (req, res) => {
+  try {
+    const { source_player_name, target_player_name } = req.body;
+    const removeOfferStatus = await Trade.removeOffer({ source_player_name, target_player_name });
+    logger.info('Sending remove offer status');
+    res.json(removeOfferStatus);
+
+  } catch (err) {
+    logger.error('Error removing offer- ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.setOfferStatus = async (req, res) => {
   try {
     const { source_player_name, target_player_name, status } = req.body;

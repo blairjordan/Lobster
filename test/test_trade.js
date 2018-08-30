@@ -41,7 +41,7 @@ describe('Trade model tests', () => {
             });
     });
 
-    it('Updates a player', (done) => {
+    it('Updates an offer status', (done) => {
         Trade.setOfferStatus({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, status: 'O' })
             .then(function (status) {
                 assert(status === 'STATUS_UPDATED');
@@ -64,18 +64,14 @@ describe('Trade model tests', () => {
     });
 
     it('Deletes an offer', (done) => {
-        Trade.removeOffer({ player_name: testSourcePlayerName })
-            .then(function (deletedCount) {
-                assert(deletedCount > 0);
+        Trade.removeOffer({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName })
+            .then(function (status) {
+                assert(status.remove_offer  === 'REMOVED');
                 done();
             })
             .catch(function (e) {
                 done(e);
             });
     });
-
-    // TODO: Update offer
-
-    // TODO: Finalize offer, i.e., transfer both player's trade items and log 
 
 });
