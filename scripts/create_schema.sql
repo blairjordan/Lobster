@@ -190,6 +190,46 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION remove_offer(
+	p_player1_name player.username%TYPE, 
+	p_player2_name player.username%TYPE) 
+RETURNS VARCHAR AS $$
+DECLARE
+  v_status VARCHAR := 'PENDING';
+  v_deleted_count NUMERIC;
+BEGIN
+    
+	-- Remove offer items 
+    DELETE FROM offer_item
+    WHERE offer_id
+    IN
+    (SELECT offer_id FROM v_offer
+    WHERE ((source = p_player1_name AND target = p_player2_name)
+    OR (source = p_player2_name AND target = p_player1_name))
+    );
+    
+    -- Remove offers
+	WITH o AS (DELETE FROM offer
+        WHERE offer_id IN
+        (
+            SELECT offer_id
+            FROM offer o, player p1, player p2
+            WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
+                OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
+            AND p1.username = p_player1_name
+            AND p2.username = p_player2_name) RETURNING 1)
+	SELECT COUNT(*) INTO v_deleted_count FROM o;
+
+	IF v_deleted_count > 0 THEN
+  		v_status := 'REMOVED';
+	END IF;
+    
+  	v_status := 'NO_CHANGES';
+  
+	RETURN v_status;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION set_offer(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 
@@ -265,26 +305,8 @@ BEGIN
 				
 		-- TODO: Write transaction to ledger
 
-		-- Remove offer items 
-        DELETE
-        FROM offer_item
-        WHERE offer_id
-        IN
-        (SELECT offer_id FROM v_offer
-        WHERE ((source = p_source_player_name AND target = p_target_player_name)
-        OR (source = p_target_player_name AND target = p_source_player_name))
-        );
-        
-        -- Remove offers
-				DELETE FROM offer
-				WHERE offer_id IN
-				(
-				SELECT offer_id
-				FROM offer o, player p1, player p2
-				WHERE ((o.source_id = p1.player_id AND o.target_id = p2.player_id)
-						OR (o.source_id = p2.player_id AND o.target_id = p1.player_id))
-				AND p1.username = p_source_player_name
-				AND p2.username = p_target_player_name);
+		-- Remove offer items and 
+		SELECT remove_offer(p_source_player_name, p_target_player_name);
 
 	END IF;
 	RETURN v_status;
