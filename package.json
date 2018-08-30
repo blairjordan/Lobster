@@ -4,7 +4,7 @@
   "description": "An API for lobby, inventory and in-game economy",
   "scripts": {
     "start": "nodemon ./server.js --exec babel-node",
-    "build": "babel . -d dist --presets es2015,stage-2 --ignore spec.js,node_modules",
+    "build": "babel . -d dist --presets es2015,stage-2 --ignore spec.js,node_modules --copy-files",
     "serve": "node dist/server.js",
     "start_babel": "babel-node ./server.js --preset=babel-preset-es2015",
     "test": "nodemon --exec \"mocha --timeout 10000 --require babel-core/register --require babel-polyfill\"",

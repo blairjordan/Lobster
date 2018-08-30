@@ -1,5 +1,7 @@
 #!/bin/sh
 
+rm -r dist
+
 forever stopall
 
 npm run-script build
