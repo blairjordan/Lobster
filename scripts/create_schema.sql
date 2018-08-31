@@ -346,7 +346,7 @@ BEGIN
 		-- TODO: Write transaction to ledger
 
 		-- Remove offer items and 
-		SELECT remove_offer(p_source_player_name, p_target_player_name);
+		PERFORM remove_offer(p_source_player_name, p_target_player_name);
 
 	END IF;
 	RETURN v_status;
