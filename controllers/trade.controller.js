@@ -17,7 +17,7 @@ controller.getOffers = async (req, res) => {
 
 controller.findOffers = async (req, res) => {
   try {
-    const { player_name } = req.body;
+    const { player_name, flat } = req.body;
     const offers = await Trade.getOffersByPlayer({ player_name });
 
     let retoffers = offers.reduce((previous, curr) => {
@@ -27,7 +27,10 @@ controller.findOffers = async (req, res) => {
     }, {source: [], target: []});
 
     logger.info('sending offers found');
-    res.json(retoffers);
+    if (!flat)
+      res.json(retoffers);
+    else
+      res.json(offers);
   }
   catch (err) {
     logger.error('Error finding offers- ' + err);

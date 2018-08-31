@@ -23,10 +23,6 @@ Run in prod:
 	forever start dist/server.js
 	
 **Database**
-
-The easiest way to create the database is to run MongoDB within a Docker container:
-
-    docker run -p 27017:27017 --name lobsterdb -d mongo
     
 Run the docker container for PostgreSQL:
 
