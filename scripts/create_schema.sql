@@ -185,7 +185,7 @@ BEGIN
 		AND p.player_id = pi.player_id
 		AND p.username = p_source_player_name;
 
-		IF v_inventory_count > p_item_count THEN
+		IF p_item_count <= v_inventory_count  THEN
 			-- The number of these items already being offered
 			SELECT SUM(item_count)
 			INTO v_offer_item_count
@@ -222,7 +222,6 @@ BEGIN
 				v_status := 'ADDED';
 			END IF;
 		ELSE
-        	RAISE NOTICE '% <= %', v_inventory_count, p_item_count;
 			v_status := 'INSUFFICIENT_INVENTORY';
 		END IF;
 	END IF; -- End ZERO_SPECIFIED check
