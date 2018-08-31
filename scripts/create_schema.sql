@@ -111,6 +111,46 @@ CREATE TRIGGER update_player_item_modtime BEFORE UPDATE ON player_item FOR EACH 
 
 CREATE TRIGGER update_tile_modtime BEFORE UPDATE ON tile FOR EACH ROW EXECUTE PROCEDURE update_modified_column();
 
+CREATE OR REPLACE FUNCTION add_player_item(
+	p_player_name player.username%TYPE, 
+	p_item_id item.item_id%TYPE,
+	p_item_count player_item.item_count%TYPE
+) 
+RETURNS VARCHAR AS $$
+DECLARE
+  v_status VARCHAR := 'PENDING';
+  v_existing_item_count NUMERIC;
+BEGIN
+
+	SELECT COUNT(*)
+	INTO v_existing_item_count
+	FROM player_item pi, player p
+	WHERE pi.player_id = p.player_id
+	and p.username = p_player_name
+	AND item_id = p_item_id;
+
+	IF v_existing_item_count = 0 THEN
+		INSERT INTO player_item(player_id, item_id, item_count) 
+		SELECT player_id, p_item_id, p_item_count 
+		FROM player  
+		WHERE username = p_player_name;
+		
+		v_status := 'ITEM_CREATED';
+	ELSE
+		UPDATE player_item pi
+		SET item_count = item_count + p_item_count
+		FROM player p
+		WHERE pi.item_id = p_item_id
+		AND pi.player_id = p.player_id
+		AND p.username = p_player_name;
+		
+		v_status := 'ITEM_COUNT_UPDATED';
+	END IF;
+
+	RETURN v_status;
+END;
+$$ LANGUAGE plpgsql;
+
 CREATE OR REPLACE FUNCTION add_offer_item(
 	p_source_player_name player.username%TYPE, 
 	p_target_player_name player.username%TYPE, 

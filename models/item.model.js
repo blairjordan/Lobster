@@ -62,7 +62,7 @@ Item.getPlayerItems = async (options) => {
 
 Item.addPlayerItem = async (options) => {
   const {player_name, item_id, item_count} = options;
-  return db.one('INSERT INTO player_item(player_id, item_id, item_count) SELECT player_id, $2, $3 FROM player  WHERE username = $1 RETURNING player_item_id', [player_name, item_id, item_count])
+  return db.one('SELECT add_player_item($1, $2, $3)', [player_name, item_id, item_count])
   .then(id => {
     return id;
   })
