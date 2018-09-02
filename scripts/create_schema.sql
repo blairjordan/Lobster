@@ -28,6 +28,7 @@ CREATE TABLE player
   x FLOAT,
   y FLOAT,
   z FLOAT,
+  rotation_y FLOAT,
   created        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
 );

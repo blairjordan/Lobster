@@ -7,8 +7,8 @@ Player.getAll = async () => {
 };
 
 Player.addPlayer = async (options) => {
-  const {username,email} = options;
-  return db.one('INSERT INTO player(username, email) VALUES ($1,$2) RETURNING player_id', [username, email])
+  const {player_name,email} = options;
+  return db.one('INSERT INTO player(username, email) VALUES ($1,$2) RETURNING player_id', [player_name, email])
   .then(id => {
     return id;
   })
@@ -17,7 +17,7 @@ Player.addPlayer = async (options) => {
   });
 };
 
-Player.removePlayer = async (options) => {
+Player.deletePlayer = async (options) => {
   const {player_id} = options;
   return db.result('DELETE FROM player WHERE player_id = $1', player_id)
   .then(result => {
@@ -29,8 +29,8 @@ Player.removePlayer = async (options) => {
 };
 
 Player.updatePlayer = async (options) => {
-  const {player_id,username,email,x,y,z} = options;
-  return db.result('UPDATE player SET username = $2, email = $3, x = $4, y = $5, z = $6 WHERE player_id = $1', [player_id, username, email, x, y, z])
+  const {player_name,x,y,z,rotation_y} = options;
+  return db.result('UPDATE player SET x = $2, y = $3, z = $4, rotation_y = $5 WHERE username = $1', [player_name, x, y, z, rotation_y])
   .then(result => {
     return result.rowCount;
   })

@@ -5,7 +5,7 @@ describe('Player model tests', () => {
 
   let player = null;
   it('Creates an item', (done) => {
-    Player.addPlayer({ username: 'test_player', email: 'test@lobster.com' })
+    Player.addPlayer({ player_name: 'test_player', email: 'test@lobster.com' })
       .then(function (playerAdded) {
         player = playerAdded;
         assert(typeof playerAdded !== 'undefined');
@@ -29,7 +29,7 @@ describe('Player model tests', () => {
 
   it('Updates a player', (done) => {
     const { player_id } = player;
-    Player.updatePlayer({ player_id, username: 'updated_test_player', email: 'test_updated@lobster.com', x: 10, y: 20, z:30 })
+    Player.updatePlayer({ player_name: 'test_player', x: 10, y: 20, z:30, rotation_y: 40 })
       .then(function (updatedCount) {
         assert(updatedCount > 0);
         done();
@@ -41,7 +41,7 @@ describe('Player model tests', () => {
 
   it('Deletes a player', (done) => {
     const { player_id } = player;
-    Player.removePlayer({ player_id })
+    Player.deletePlayer({ player_id })
       .then(function (deletedCount) {
         assert(deletedCount > 0);
         done();

@@ -11,10 +11,10 @@ router.post('/add', (req, res) => {
 });
 
 router.delete('/remove', (req, res) => {
-  playerController.removePlayer(req, res);
+  playerController.deletePlayer(req, res);
 });
 
-router.put('/update_player', (req, res) => {
+router.put('/update', (req, res) => {
   playerController.updatePlayer(req, res);
 });
 

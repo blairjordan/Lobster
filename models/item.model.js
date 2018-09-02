@@ -63,8 +63,8 @@ Item.getPlayerItems = async (options) => {
 Item.addPlayerItem = async (options) => {
   const {player_name, item_id, item_count} = options;
   return db.one('SELECT add_player_item($1, $2, $3)', [player_name, item_id, item_count])
-  .then(id => {
-    return id;
+  .then(status => {
+    return status.add_player_item;
   })
   .catch(error => {
     throw error;

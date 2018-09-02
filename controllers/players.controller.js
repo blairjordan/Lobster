@@ -15,4 +15,43 @@ controller.getAll = async (req, res) => {
   }
 };
 
+controller.addPlayer = async (req, res) => {
+  try {
+    const {player_name, email} = req.body;
+    const player_id = await Player.addPlayer({player_name, email});
+    logger.info('adding player');
+    res.json(player_id);
+  }
+  catch (err) {
+    logger.error('Error adding player- ' + err);
+    res.status(500).json(err);
+  }
+};
+
+controller.deletePlayer = async (req, res) => {
+  try {
+    const { player_id } = req.body;
+    const deletedCount = await Player.deletePlayer({ player_id });
+    logger.info('Sending remove player count');
+    res.json(deletedCount);
+
+  } catch (err) {
+    logger.error('Error removing player- ' + err);
+    res.status(500).json(err);
+  }
+};
+
+controller.updatePlayer = async (req, res) => {
+  try {
+    const {player_name, x, y, z, rotation_y} = req.body;
+    const updatedCount = await Player.updatePlayer({player_name, x, y, z, rotation_y});
+    logger.info('updating player');
+    res.json(updatedCount);
+  }
+  catch (err) {
+    logger.error('Error updating player- ' + err);
+    res.status(500).json(err);
+  }
+};
+
 export default controller;

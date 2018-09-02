@@ -66,8 +66,9 @@ describe('Item model tests', () => {
 	it('Creates a player item', (done) => {
 		const { item_id } = item;
 		Item.addPlayerItem({ player_name: 'blair', item_id, item_count: 3 })
-			.then(function (addedPlayerItem) {
-				assert(addedPlayerItem.player_item_id > 0);
+			.then(function (result) {
+                console.log(result);
+				assert(result === 'ITEM_CREATED');
 				done();
 			})
 			.catch(function (e) {
