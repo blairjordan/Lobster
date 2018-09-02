@@ -4,41 +4,112 @@ html
       style
         include trade.css
     body
-      | <h1>Trade</h1>
-      | <div>
-      |   Your username: <input id="player" type="text" />
-      |   Target username: <input id="target" type="text" />
-      | </div>
-      | <br />
-      | <button id="refresh" type="button">Refresh</button>
-      | 
-      | <div class="content">
-      |   <div class="inventory">
-      |     <h2>Your inventory</h2>
-      |     <div id="inventory-items">
-      |         <ul />
-      |     </div>
-      |   </div>
-      |   
-      |   <div class="trade row">
-      |     <div class="source column">
-      |       <h2>Offer <span id="my-offer-status"></span></h2>
-      |       <div id="my-offer-items">
-      |           <ul />
-      |       </div>
-      |     </div>
-      |     <div class="target column">
-      |       <h2>Their offer <span id="their-offer-status"</span></h2>
-      |       <div id="their-offer-items">
-      |           <ul />
-      |       </div>
-      |     </div>
-      |   </div>
-      | 
-      |   <div class="action">
-      |     <button id="accept" type="button">Accept</button>
-      |     <button id="decline" type="decline">Decline</button>
-      |   </div>
-      | </div>
-      script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
-      script(src='../trade.js')
+    | <div class="container">
+    |   
+    |   <h1>Lobster API</h1>
+    |   
+    |   <div class="row">
+    |     <div class="col-md-12"><b>Server:</b> <a id="server"></a></div>
+    |   </div>
+    |   
+    |   <hr />
+    |   
+    |   <div class="row">
+    |         <div class="col-md-6">Username: <input id="player" type="text" /></div>
+    |         <div class="col-md-6">Target: <input id="target" type="text" /></div>
+    |   </div>
+    |   
+    |   <hr />
+    |   
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <button id="refresh" type="button" class="btn btn-sm btn-primary" aria-label="Left Align">
+    |         <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span> Refresh
+    |       </button>
+    |     </div>
+    |   </div>
+    |   
+    |   <hr />
+    |   
+    |   <h2>/trade</h2>
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <button id="open" type="button" class="btn btn-sm btn-primary" aria-label="Left Align">
+    |         <span class="glyphicon glyphicon-transfer" aria-hidden="true"></span> Open Trade (/trade/add_offer)    
+    |       </button>
+    |     </div>
+    |   </div>
+    |   
+    |   <hr />
+    |   
+    |   <h2>Your inventory (/items/find)</h2>
+    |   
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <div class="inventory">
+    |         <div id="inventory-items">
+    |             <ul />
+    |         </div>
+    |       </div>
+    |     </div>
+    |   </div>
+    |   <hr />
+    |   
+    |   <div class="trade row">
+    |     <div class="source col-md-6">
+    |       <h2>Offer <span id="my-offer-status"></span> (trade/find)</h2>
+    |       <div id="my-offer-items">
+    |           <ul />
+    |       </div>
+    |     </div>
+    |     <div class="target col-md-6">
+    |       <h2>Their offer <span id="their-offer-status"></span> (trade/find)</h2>
+    |       <div id="their-offer-items">
+    |           <ul />
+    |       </div>
+    |     </div>
+    |   </div>
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <div class="action">
+    |         <button id="accept" type="button" class="btn btn-sm btn-success" aria-label="Left Align">
+    |           <span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Accept (/trade/update)
+    |         </button>
+    |         <button id="decline" type="decline" class="btn btn-sm btn-danger" aria-label="Left Align">
+    |           <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Decline (trade/remove_offer)
+    |         </button>
+    |       </div>
+    |     </div>
+    |   </div>
+    |   <hr />
+    |   
+    |   <h2>All Items (/items/all)</h2>
+    |   
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <div id="all-items">
+    |         <ul />
+    |       </div>
+    |     </div>
+    |   </div>
+    |   
+    |   <hr />
+    |   
+    |   <h2>Create new Item (/items/add)</h2>
+    |   
+    |   <div class="row">
+    |     <div class="col-md-12">
+    |       <div>
+    |         <span>Type (/items/types): <select id="item-type-id"></select></span>
+    |         <input class="form-control" placeholder="Name" id="item-name" type="text" />
+    |         <input class="form-control" placeholder="Description" id="item-desc" type="text" />
+    |         <button id="create-item" type="button" class="btn btn-sm btn-primary">Create Item</button>
+    |       </div>
+    |     </div>
+    |   </div>
+    | </div> <!-- /.container -->
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js')
+    script(src='../trade.js')
+    link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')
+    

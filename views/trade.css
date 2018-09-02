@@ -1,19 +1,9 @@
-.content {
-  width: 40em;
+input.qty {
+  width: 25px;
+  margin: 0 10px;
+  display: inline;
 }
 
-.column {
-  float: left;
-  width: 50%;
-}
-
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-.action {
-  width: 50%;
-  margin: 0 auto;
+input {
+  width:100%;
 }
