@@ -5,6 +5,7 @@ DROP TABLE IF EXISTS player CASCADE;
 DROP TABLE IF EXISTS item CASCADE;
 DROP TABLE IF EXISTS item_type CASCADE;
 DROP TABLE IF EXISTS tile CASCADE;
+DROP TABLE IF EXISTS ledger CASCADE;
 
 DROP VIEW IF EXISTS v_offer;
 
@@ -48,7 +49,7 @@ CREATE TABLE player_item
   player_item_id BIGSERIAL PRIMARY KEY ,
   item_id        BIGINT NOT NULL REFERENCES item (item_id),
   player_id      BIGINT NOT NULL REFERENCES player (player_id),
-  item_count     INTEGER NOT NULL ,
+  item_count     INT NOT NULL ,
   created        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
 );
@@ -76,6 +77,18 @@ CREATE TABLE tile
   y FLOAT,
   created        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   modified       TIMESTAMP  DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE ledger
+(
+    transaction_id	BIGSERIAL PRIMARY KEY,
+    offer_id		BIGINT,
+    source_id		BIGINT NOT NULL REFERENCES player (player_id),
+    target_id		BIGINT NOT NULL REFERENCES player (player_id),
+    item_id			BIGINT NOT NULL REFERENCES item (item_id),
+    item_count		INT,
+  	created			TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  	modified		TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE OR REPLACE VIEW v_offer AS
