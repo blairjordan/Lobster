@@ -14,6 +14,16 @@ DROP FUNCTION IF EXISTS add_offer;
 DROP FUNCTION IF EXISTS add_offer_item;
 DROP FUNCTION IF EXISTS set_offer;
 
+DROP SEQUENCE IF EXISTS ledger_transaction_id_seq;
+
+CREATE SEQUENCE ledger_transaction_id_seq
+    INCREMENT 1
+    START 2
+    MINVALUE 1
+    MAXVALUE 9223372036854775807
+    CACHE 1;
+
+
 CREATE TABLE item_type
 (
   item_type_id  BIGSERIAL PRIMARY KEY,
@@ -81,15 +91,18 @@ CREATE TABLE tile
 
 CREATE TABLE ledger
 (
-    transaction_id	BIGSERIAL PRIMARY KEY,
-    offer_id		BIGINT,
-    source_id		BIGINT NOT NULL REFERENCES player (player_id),
-    target_id		BIGINT NOT NULL REFERENCES player (player_id),
-    item_id			BIGINT NOT NULL REFERENCES item (item_id),
-    item_count		INT,
-  	created			TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  	modified		TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+		ledger_id				BIGSERIAL PRIMARY KEY,
+    transaction_id	BIGINT NOT NULL,
+    offer_id				BIGINT,
+    source_id				BIGINT NOT NULL REFERENCES player (player_id),
+    target_id				BIGINT NOT NULL REFERENCES player (player_id),
+    item_id					BIGINT NOT NULL REFERENCES item (item_id),
+    item_count			INT,
+  	created					TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  	modified				TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX ledger_transaction_id_idx ON ledger (transaction_id);
 
 CREATE OR REPLACE VIEW v_offer AS
 SELECT o.source_id,
@@ -243,15 +256,24 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION remove_offer(
+CREATE OR REPLACE FUNCTION write_offer(
 	p_player1_name player.username%TYPE, 
 	p_player2_name player.username%TYPE) 
 RETURNS VARCHAR AS $$
 DECLARE
   v_status VARCHAR := 'PENDING';
   v_deleted_count NUMERIC;
+	v_transaction_id integer;
 BEGIN
     
+  	v_transaction_id := nextval('ledger_transaction_id_seq');
+
+		INSERT INTO ledger(transaction_id, offer_id, source_id, target_id, item_id, item_count) 
+		SELECT v_transaction_id, offer_id, source_id, target_id, item_id, item_count
+		FROM v_offer
+    WHERE ((source = p_player1_name AND target = p_player2_name)
+    OR (source = p_player2_name AND target = p_player1_name));
+
 	-- Remove offer items 
     DELETE FROM offer_item
     WHERE offer_id
@@ -355,11 +377,9 @@ BEGIN
 		AND pi.player_id = o.source_id
 		AND pi.item_id = o.item_id)
 		AND item_count = 0;
-				
-		-- TODO: Write transaction to ledger
 
-		-- Remove offer items and 
-		PERFORM remove_offer(p_source_player_name, p_target_player_name);
+		-- Write to ledger and remove offer items
+		PERFORM write_offer(p_source_player_name, p_target_player_name);
 
 	END IF;
 	RETURN v_status;
