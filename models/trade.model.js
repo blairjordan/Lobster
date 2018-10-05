@@ -44,15 +44,4 @@ Trade.addOffer = async (options) => {
   });
 };
 
-Trade.removeOffer = async (options) => {
-  const { source_player_name, target_player_name } = options;
-  return db.one(`SELECT remove_offer($1,$2)`, [source_player_name, target_player_name])
-  .then(result => {
-    return result;
-  })
-  .catch(error => {
-    throw error;
-  });
-};
-
 export default Trade;

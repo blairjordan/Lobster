@@ -40,6 +40,19 @@ controller.getPlayerItems = async (req, res) => {
   }
 };
 
+controller.getRandomItem = async (req, res) => {
+  try {
+    const {type} = req.body;
+    const item = await Item.getRandomItem({type});
+    logger.info('sending item');
+    res.json(item);
+  }
+  catch (err) {
+    logger.error('Error fetching random item - ' + err);
+    res.status(500).json(err);
+  }
+};
+
 controller.addPlayerItem = async (req, res) => {
   try {
     const {player_name, item_id, item_count} = req.body;

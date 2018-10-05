@@ -7,6 +7,8 @@ INSERT INTO item_type(name) VALUES ('misc');
 
 INSERT INTO item(item_type_id, name) VALUES (1, 'mullet');
 INSERT INTO item(item_type_id, name) VALUES (1, 'catfish');
+INSERT INTO item(item_type_id, name) VALUES (1, 'bream');
+INSERT INTO item(item_type_id, name) VALUES (1, 'taylor');
 INSERT INTO item(item_type_id, name) VALUES (2, 'wheel of cheese');
 INSERT INTO item(item_type_id, name) VALUES (3, 'old boot');
 

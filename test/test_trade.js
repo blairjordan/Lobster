@@ -20,7 +20,7 @@ describe('Trade model tests', () => {
     });
 
     it('Adds a trade offer item', (done) => {
-        Trade.addItem({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, item_id: testItemId, quantity: 10 })
+        Trade.addItem({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName, item_id: testItemId, quantity: 2 })
             .then(function (status) {
                 assert(status === 'ADDED');
                 done();
@@ -62,16 +62,4 @@ describe('Trade model tests', () => {
                 done(e);
             });
     });
-
-    it('Deletes an offer', (done) => {
-        Trade.removeOffer({ source_player_name: testSourcePlayerName, target_player_name: testTargetPlayerName })
-            .then(function (status) {
-                assert(status.remove_offer  === 'REMOVED');
-                done();
-            })
-            .catch(function (e) {
-                done(e);
-            });
-    });
-
 });

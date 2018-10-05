@@ -51,6 +51,17 @@ describe('Item model tests', () => {
 			});
 	});
 
+	it('Retrieves a random item', (done) => {
+		Item.getRandomItem({ type: 'fish' })
+			.then(function (item) {
+				assert(typeof item !== 'undefined');
+				done();
+			})
+			.catch(function (e) {
+				done(e);
+			});
+	});
+
 	it('Updates an item', (done) => {
 		const { item_id } = item;
 		Item.updateItem({ item_id, name: 'blowey', description: 'If you eat this fish, you WILL die.' })
@@ -65,9 +76,8 @@ describe('Item model tests', () => {
 	
 	it('Creates a player item', (done) => {
 		const { item_id } = item;
-		Item.addPlayerItem({ player_name: 'blair', item_id, item_count: 3 })
+		Item.addPlayerItem({ player_name: testPlayerName, item_id, item_count: 3 })
 			.then(function (result) {
-                console.log(result);
 				assert(result === 'ITEM_CREATED');
 				done();
 			})
@@ -78,7 +88,7 @@ describe('Item model tests', () => {
 		
 	it('Removes a player item', (done) => {
 		const { item_id } = item;
-		Item.removePlayerItem({ 'player_name': 'blair', item_id })
+		Item.removePlayerItem({ 'player_name': testPlayerName, item_id })
 			.then(function (addedPlayer) {
 				assert(addedPlayer > 0);
 				done();

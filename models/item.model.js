@@ -60,6 +60,22 @@ Item.getPlayerItems = async (options) => {
     });
 };
 
+Item.getRandomItem = async (options) => {
+    const { type } = options;
+    return db.one(`SELECT i.item_id, it.item_type_id, it.name item_type, i.name item_name, i.created, i.modified
+    FROM item i, item_type it
+    WHERE i.item_type_id = it.item_type_id
+      AND it.name = $1
+    ORDER BY random()
+    LIMIT 1`, [type])
+    .then(item => {
+      return item;
+    })
+    .catch(error => {
+      throw error;
+    });
+};
+
 Item.addPlayerItem = async (options) => {
   const {player_name, item_id, item_count} = options;
   return db.one('SELECT add_player_item($1, $2, $3)', [player_name, item_id, item_count])
