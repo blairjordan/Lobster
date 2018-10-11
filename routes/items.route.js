@@ -15,7 +15,7 @@ router.post('/find', function (req, res) {
   itemController.getPlayerItems(req, res);
 });
 
-router.post('/random', function (req, res) {
+router.get('/random', function (req, res) {
   itemController.getRandomItem(req, res);
 });
 
