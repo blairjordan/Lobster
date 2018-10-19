@@ -39,6 +39,18 @@ describe('Player model tests', () => {
       });
   });
 
+
+  it('Retrieves players by position', (done) => {
+    Player.getPlayersByPosition({ x_min: 0, x_max: 50, y_min: 0, y_max: 50, z_min: 0, z_max: 50 })
+      .then(function (data) {
+        assert(data.length > 0);
+        done();
+      })
+      .catch(function (e) {
+        done(e);
+      });
+  });
+
   it('Deletes a player', (done) => {
     const { player_id } = player;
     Player.deletePlayer({ player_id })

@@ -8,10 +8,21 @@ controller.getAll = async (req, res) => {
     const players = await Player.getAll();
     logger.info('sending all players');
     res.json(players);
-  }
-  catch (err) {
+  } catch (err) {
     logger.error('Error in getting players- ' + err);
     res.json(err);
+  }
+};
+
+controller.getPlayersByPosition = async (req, res) => {
+  try {
+    const { x_min, x_max, y_min, y_max, z_min, z_max } = req.body;
+    const players = await Trade.getPlayersByPosition({ x_min, x_max, y_min, y_max, z_min, z_max });
+    logger.info('sending players found');
+    res.json(players);
+  } catch (err) {
+    logger.error('Error finding players- ' + err);
+    res.status(500).json(err);
   }
 };
 
@@ -21,8 +32,7 @@ controller.addPlayer = async (req, res) => {
     const player_id = await Player.addPlayer({player_name, email});
     logger.info('adding player');
     res.json(player_id);
-  }
-  catch (err) {
+  } catch (err) {
     logger.error('Error adding player- ' + err);
     res.status(500).json(err);
   }
@@ -47,8 +57,7 @@ controller.updatePlayer = async (req, res) => {
     const updatedCount = await Player.updatePlayer({player_name, x, y, z, rotation_y});
     logger.info('updating player');
     res.json(updatedCount);
-  }
-  catch (err) {
+  } catch (err) {
     logger.error('Error updating player- ' + err);
     res.status(500).json(err);
   }
