@@ -10,6 +10,10 @@ router.post('/add', (req, res) => {
   playerController.addPlayer(req, res);
 });
 
+router.post('/find', (req, res) => {
+  playerController.getPlayersByPosition(req, res);
+});
+
 router.delete('/remove', (req, res) => {
   playerController.deletePlayer(req, res);
 });
