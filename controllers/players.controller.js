@@ -17,7 +17,7 @@ controller.getAll = async (req, res) => {
 controller.getPlayersByPosition = async (req, res) => {
   try {
     const { x_min, x_max, y_min, y_max, z_min, z_max } = req.body;
-    const players = await Trade.getPlayersByPosition({ x_min, x_max, y_min, y_max, z_min, z_max });
+    const players = await Player.getPlayersByPosition({ x_min, x_max, y_min, y_max, z_min, z_max });
     logger.info('sending players found');
     res.json(players);
   } catch (err) {
