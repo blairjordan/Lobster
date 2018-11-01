@@ -46,10 +46,12 @@ app.get('/', function (req, res) {
     res.render('index', { title: 'Lobster', message: 'Welcome to Lobster!' });
 });
 
-https.createServer({
+https.createServer(
+/*{
     key: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/cert.pem')
-}, app).listen(port, () => {
+},*/
+ app).listen(port, () => {
     logger.info('server started - ', port);
 });
 
