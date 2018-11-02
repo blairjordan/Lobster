@@ -1,7 +1,7 @@
 import path from "path";
 
 const config = {
-  serverPort: process.env.serverPort || 443,
+  serverPort: process.env.PORT || 443,
   log: {
     logFileDir: path.join(__dirname, '../../log'),
     logFileName: 'app.log',
