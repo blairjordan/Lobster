@@ -3,7 +3,7 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import fs from 'fs';
-import https from 'https';
+import http from 'http';
 import logger from './core/logger/app-logger';
 import morgan from 'morgan';
 import config from './core/config/config.dev';
@@ -46,7 +46,7 @@ app.get('/', function (req, res) {
     res.render('index', { title: 'Lobster', message: 'Welcome to Lobster!' });
 });
 
-https.createServer(
+http.createServer(
 /*{
     key: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/cert.pem')
