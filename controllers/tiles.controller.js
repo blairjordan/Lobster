@@ -27,9 +27,8 @@ controller.getAll = async (req, res) => {
   }
 };
 
-controller.make = options => {
+controller.make = (req, res) => {
   const { size, tiles } = req.body;
-  Tile.make({size,tiles});
   stitch({ conf: config.pincer, size, tiles });
   res.json(req.body);
 };
