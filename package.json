@@ -4,7 +4,7 @@
   "descriptio": "An API for lobby, inventory and in-game economy",
   "scripts": {
     "dev": "nodemon ./server.js --exec babel-node",
-    "start": "npm run clean && npm run copy && npm run build && node ./dist/server.js",
+    "start": "npm run clean && npm run build && npm run copy && node ./dist/server.js",
     "build": "babel . -d dist --presets es2015,stage-2 --ignore spec.js,node_modules,public --copy-files",
     "copy" : "cp -R ./public dist",
     "clean": "rm -rf dist && mkdir dist",
