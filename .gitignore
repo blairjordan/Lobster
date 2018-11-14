@@ -29,3 +29,7 @@ benchmarks/graphs
 
 # Logger
 log
+
+# Application
+assets/tiles
+dist

@@ -37,10 +37,14 @@ const panel = async (conf,input,width,height,temp,label,cb) => {
 
 const combine = async (conf,temp,width,height) => {
   let found = [];
+  
+  console.log(temp);
+  console.log(fs.readdirSync(temp));
   fs.readdirSync(temp).forEach(file => {
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
   });
   
+  console.log(found);
   let sorted = found.sort((a,b) => (a.idx < b.idx) ? 1 : ((b.idx > a.idx) ? -1 : 0));
 
   if (sorted.length > 1) {
