@@ -16,8 +16,8 @@ router.get('/seed', (req, res) => {
   tileController.seed(req, res);
 });
 
-router.post('/make', function (req, res) {
-  tileController.make(req, res);
+router.post('/stitch', function (req, res) {
+  tileController.stitch(req, res);
 });
 
 export default router;

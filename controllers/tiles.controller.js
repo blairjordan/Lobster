@@ -2,7 +2,7 @@ import Tile from '../models/tiles.model';
 import logger from '../core/logger/app-logger';
 import fs from 'fs';
 import path from 'path';
-import { stitch } from '../core/lib/pincer';
+import { stitch, split } from '../core/lib/pincer';
 import config from '../core/config/config.dev';
 
 const controller = {};
@@ -27,13 +27,21 @@ controller.getAll = async (req, res) => {
   }
 };
 
-controller.make = (req, res) => {
+controller.stitch = (req, res) => {
   const { size, tiles } = req.body;
   stitch({ conf: config.pincer, size, tiles });
   res.json(req.body);
 };
 
+controller.split = (req, res) => {
+  console.log('hit2');
+  // const { filename } = req.body;
+  split({ conf: config.pincer, filename: 'temp/ga8j3lf8wl40/final.png', segmentCount: 2 });
+  res.json(req.body);
+};
+
 // TODO: Convert to Postgres. Easy, but I'm lazy.
+// This reads everything in the assets dir and inserts it into the DB.
 controller.seed = async (req, res) => {
   const { ext, tilePrefix, separator } = config.pincer.tile;
   fs.readdirSync(config.pincer.tile.path).forEach(f => {

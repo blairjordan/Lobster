@@ -72,50 +72,48 @@ const stitch = async options => {
   const [totalWidth,totalHeight] = [size.width * conf.tile.width, size.height * conf.tile.height];
 
   let temp = tempDir(conf);
-
   let promises = [];
-    for (let y = yMax; y >= yMin; y--) {
-      let ptiles = [];
-      for (let x = xMin; x <= xMax; x++) {
-        let tile = tileExists(tiles,x,y);
-        if (tile) {
-          let fpath = `${path}/${tilePrefix||'Tile_'}${x}${separator||'x'}${y}${ext||'.png'}`;
-          let dpath = `${path}/${tilePrefix||'Tile_'}${notile}${ext||'.png'}`;
-          
-          if (fs.existsSync(fpath)) {
-            ptiles.push(fpath);
-          } else {
-            ptiles.push(dpath);
-          }
-          
-        } else {
-          ptiles.push('NULL:');
-        }
-      }
 
-      promises.push(
-        new Promise(resolve => panel(conf,ptiles,totalWidth,conf.tile.height,temp,y,
-          (err) => {
-            if (err) { console.log(err); }
-            resolve();
-          }))
-      );
+  for (let y = yMax; y >= yMin; y--) {
+    let ptiles = [];
+    for (let x = xMin; x <= xMax; x++) {
+      let tile = tileExists(tiles,x,y);
+      if (tile) {
+        let fpath = `${path}/${tilePrefix||'Tile_'}${x}${separator||'x'}${y}${ext||'.png'}`;
+        let dpath = `${path}/${tilePrefix||'Tile_'}${notile}${ext||'.png'}`;
+        
+        if (fs.existsSync(fpath)) {
+          ptiles.push(fpath);
+        } else {
+          ptiles.push(dpath);
+        }
+        
+      } else {
+        ptiles.push('NULL:');
+      }
     }
+
+    promises.push(
+      new Promise(resolve => panel(conf,ptiles,totalWidth,conf.tile.height,temp,y,
+        (err) => {
+          if (err) { console.log(err); }
+          resolve();
+        }))
+    );
+  }
   
   return Promise.all(promises).then(() => {
     combine(conf,temp,totalHeight,totalWidth,conf.tile.width);
   });
 };
 
-module.exports = {stitch};
-
 //stitch(input);
 
 // tweak and expose this stuff when needed (chops up tiles again)
-/*
-const generateTiles = (options) => {
 
-  const {input, width, height, prefix, segmentCount, ext, output, seperator} = options;
+const split = async options => {
+  
+  const {filename, width, height, prefix, segmentCount, ext, output, seperator} = options;
   let tileNames = [];
 
   const [segmentSizeW,segmentSizeH] = [width/segmentCount,height/segmentCount];
@@ -132,7 +130,7 @@ const generateTiles = (options) => {
 
         promises.push(
           new Promise(resolve =>
-            gm(input).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
+            gm(filename).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
             .write(`${output}/${fname}`, function (err) {
               if (err) { console.log(err); return; }
               tileNames.push(fname);
@@ -150,12 +148,15 @@ const generateTiles = (options) => {
   });
 };
 
+module.exports = {stitch, split};
+
+/*
 let input = 'grid.png';
 gm(input).size(function(err, meta){
   const {width, height} = meta;
   if (err) { console.log(err); return; }
 
-  let tiles = generateTiles({
+  let tiles = split({
     input,
     segmentCount: 16,
     prefix: 'Tile_',

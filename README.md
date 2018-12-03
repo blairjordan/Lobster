@@ -169,7 +169,10 @@ Return a list of all offers in the system.
 ### /seed
 **Request type:** GET
 
-### /make
+### /stitch
+**Request type:** POST
+
+### /split
 **Request type:** POST
 
 ## /players
