@@ -2,29 +2,46 @@ const tileWidth = 50,
       tileHeight = 50;
 
 const tilesURI = '/tiles/all',
-      tilesMakeURI = '/tiles/make';
+      tilesStitchURI = '/tiles/stitch',
+      tilesSplitURI = '/tiles/split';
 
 const minMax = (data, prop, func) => data.reduce((min_max, t) => (func == 'max') ? Math.max(min_max, t[prop]) : Math.min(min_max, t[prop]), data[0][prop]);
 
-const make = () => {
+const getBody = () => {
   let selected = tiles.filter(t => t.selected);
-  if (selected.length > 0) {
-    let xMax = minMax(selected, 'x', 'max'),
-        xMin = minMax(selected, 'x', 'min'),
-        yMax = minMax(selected, 'y', 'max'),
-        yMin = minMax(selected, 'y', 'min'),
-        width = (xMax - xMin)+1,
-        height = (yMax - yMin)+1;
-    
-    let body = {
-      size: { xMax, xMin, yMax, yMin, width, height },
-      tiles: selected
-    };
-    
-    d3.request(tilesMakeURI)
+  if (selected.length === 0) {
+    return null;
+  }
+  let xMax = minMax(selected, 'x', 'max'),
+      xMin = minMax(selected, 'x', 'min'),
+      yMax = minMax(selected, 'y', 'max'),
+      yMin = minMax(selected, 'y', 'min'),
+      width = (xMax - xMin)+1,
+      height = (yMax - yMin)+1;
+  let body = {
+    size: { xMax, xMin, yMax, yMin, width, height },
+    tiles: selected
+  };
+  return body;
+};
+
+const stitch = () => {
+  let body = getBody();
+  if (body !== null) {
+    d3.request(tilesStitchURI)
     .header("Content-type", "application/json; charset=UTF-8")
     .post(JSON.stringify(body), (r) => {console.log(r);});
+  } else {
+    console.log('No tiles selected.');
+  }
+};
 
+const split = () => {
+  let body = getBody();
+  if (body !== null) {
+    d3.request(tilesSplitURI)
+    .header("Content-type", "application/json; charset=UTF-8")
+    .post(JSON.stringify(body), (r) => {console.log(r);});
   } else {
     console.log('No tiles selected.');
   }
@@ -123,7 +140,8 @@ loadTiles = (t) => {
       .call(adjustTickLabels,'y',tileHeight/2);
 
   d3.select(".reset").on("click", resetted);
-  d3.select(".make").on("click", make);
+  d3.select(".stitch").on("click", stitch);
+  d3.select(".split").on("click", split);
 
   svg.call(zoom);
 };
