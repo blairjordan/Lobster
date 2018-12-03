@@ -20,4 +20,8 @@ router.post('/stitch', function (req, res) {
   tileController.stitch(req, res);
 });
 
+router.post('/split', function (req, res) {
+  tileController.split(req, res);
+});
+
 export default router;

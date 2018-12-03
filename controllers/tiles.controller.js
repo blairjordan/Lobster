@@ -36,7 +36,7 @@ controller.stitch = (req, res) => {
 controller.split = (req, res) => {
   console.log('hit2');
   // const { filename } = req.body;
-  split({ conf: config.pincer, filename: 'temp/ga8j3lf8wl40/final.png', segmentCount: 2 });
+  split({ conf: config.pincer, filename: 'temp/sc22owjbf1s0/final.png', output: './output/', vSegmentCount: 2, hSegmentCount: 2 });
   res.json(req.body);
 };
 

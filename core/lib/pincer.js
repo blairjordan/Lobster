@@ -112,26 +112,35 @@ const stitch = async options => {
 // tweak and expose this stuff when needed (chops up tiles again)
 
 const split = async options => {
+
+  const {conf,filename,vSegmentCount,hSegmentCount,output} = options;
+  const {width, height, path, tilePrefix, ext, separator} = conf.tile;
   
-  const {filename, width, height, prefix, segmentCount, ext, output, seperator} = options;
   let tileNames = [];
 
-  const [segmentSizeW,segmentSizeH] = [width/segmentCount,height/segmentCount];
-  const mid = Math.floor(segmentCount/2);
+  console.log(options);
+
+  const [segmentSizeW,segmentSizeH] = [width,height];
+  const hMid = Math.floor(hSegmentCount/2);
+  const vMid = Math.floor(vSegmentCount/2);
   let offsetW = 0;
   let offsetH = 0;
   let promises = [];
 
-  for (let i = 0; i < segmentCount; i++) {
-    if (offsetW == width) { offsetW = 0; }
-    for (let j = 0; j < segmentCount; j++) {
-        if (offsetH == height) { offsetH = 0; }
-        let fname = `${prefix||'Tile'}${j%segmentCount-mid}${seperator||'_'}${(i%segmentCount-mid)*-1}.${ext||'png'}`;
+  for (let i = 0; i < hSegmentCount; i++) {
+    if (offsetW === width) { offsetW = 0; }
+    for (let j = 0; j < vSegmentCount; j++) {
+        if (offsetH === height) { offsetH = 0; }
+        let fname = `${tilePrefix||'Tile'}${j%hSegmentCount-hMid}${separator||'_'}${(i%vSegmentCount-vMid)*-1}${ext||'png'}`;
+
+        console.log(`\nfname:${fname}\nsegmentSizeW:${segmentSizeW}\nsegmentSizeH:${segmentSizeH}\noffsetW:${offsetW}\noffsetH:${offsetH}`);
+
+        console.log(output);
 
         promises.push(
           new Promise(resolve =>
-            gm(filename).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
-            .write(`${output}/${fname}`, function (err) {
+            gm(`${filename}`).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
+            .write(`${output}${fname}`, function (err) {
               if (err) { console.log(err); return; }
               tileNames.push(fname);
               resolve();

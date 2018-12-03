@@ -172,6 +172,10 @@ Return a list of all offers in the system.
 ### /stitch
 **Request type:** POST
 
+Stitches selected tiles together into one image.
+
+The final image is currently written to temp/[random ID]/final.png
+
 ### /split
 **Request type:** POST
 
