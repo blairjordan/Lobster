@@ -33,11 +33,19 @@ controller.stitch = (req, res) => {
   res.json(req.body);
 };
 
-controller.split = (req, res) => {
-  console.log('hit2');
-  // const { filename } = req.body;
-  split({ conf: config.pincer, filename: 'temp/sc22owjbf1s0/final.png', output: './output/', vSegmentCount: 2, hSegmentCount: 2 });
-  res.json(req.body);
+controller.split = async (req, res) => {
+  const { tiles } = req.body;
+
+  const [xMin, xMax, yMin, yMax] = 
+  [
+    Math.min.apply(null, tiles.map(t => t.x)),
+    Math.max.apply(null, tiles.map(t => t.x)),
+    Math.min.apply(null, tiles.map(t => t.y)),
+    Math.max.apply(null, tiles.map(t => t.y))
+  ];
+
+  const images = await split({ conf: config.pincer, filename: './temp/8nfb7u96dcg0/final.png', output: './output/', xMin, xMax, yMin, yMax });
+  res.json(images);
 };
 
 // TODO: Convert to Postgres. Easy, but I'm lazy.

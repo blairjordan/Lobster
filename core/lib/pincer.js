@@ -107,49 +107,39 @@ const stitch = async options => {
   });
 };
 
-//stitch(input);
-
-// tweak and expose this stuff when needed (chops up tiles again)
-
 const split = async options => {
-
-  const {conf,filename,vSegmentCount,hSegmentCount,output} = options;
-  const {width, height, path, tilePrefix, ext, separator} = conf.tile;
   
-  let tileNames = [];
+  const {conf,filename,xMin,xMax,yMin,yMax} = options;
+  const {width, height, tilePrefix, ext, separator} = conf.tile;
 
-  console.log(options);
+  let [wTileSpan, hTileSpan] = [xMax - (xMin-1), yMax - (yMin-1)];
+  let tileNames = [];
+  let temp = tempDir(conf);
 
   const [segmentSizeW,segmentSizeH] = [width,height];
-  const hMid = Math.floor(hSegmentCount/2);
-  const vMid = Math.floor(vSegmentCount/2);
   let offsetW = 0;
   let offsetH = 0;
   let promises = [];
 
-  for (let i = 0; i < hSegmentCount; i++) {
-    if (offsetW === width) { offsetW = 0; }
-    for (let j = 0; j < vSegmentCount; j++) {
-        if (offsetH === height) { offsetH = 0; }
-        let fname = `${tilePrefix||'Tile'}${j%hSegmentCount-hMid}${separator||'_'}${(i%vSegmentCount-vMid)*-1}${ext||'png'}`;
-
-        console.log(`\nfname:${fname}\nsegmentSizeW:${segmentSizeW}\nsegmentSizeH:${segmentSizeH}\noffsetW:${offsetW}\noffsetH:${offsetH}`);
-
-        console.log(output);
-
-        promises.push(
-          new Promise(resolve =>
-            gm(`${filename}`).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
-            .write(`${output}${fname}`, function (err) {
-              if (err) { console.log(err); return; }
-              tileNames.push(fname);
-              resolve();
-            })
-          ));
-        
-        offsetH += segmentSizeH;
+  for (let y = yMax; y >= yMin; y--) {
+    if (offsetH === height * hTileSpan) { offsetH = 0; }
+    for (let x = xMin; x <= xMax; x++) {
+      if (offsetW === width * wTileSpan) { offsetW = 0; }
+      let fname = `${tilePrefix||'Tile'}${x}${separator||'_'}${(y)}${ext||'png'}`;
+      let output = `${temp}/${fname}`;
+      promises.push(
+        new Promise(resolve =>
+          gm(`${filename}`).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
+          .write(`${temp}/${fname}`, function (err) {
+            if (err) { console.log(err); return; }
+            tileNames.push({ filename: fname, path: output, segmentSizeW, segmentSizeH, offsetW, offsetH });
+            resolve();
+          })
+        ));
+      
+      offsetW += segmentSizeW;
     }
-    offsetW += segmentSizeW;
+    offsetH += segmentSizeH;
   }
 
   return Promise.all(promises).then(() => {
