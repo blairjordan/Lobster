@@ -2,6 +2,7 @@ import Tile from '../models/tiles.model';
 import logger from '../core/logger/app-logger';
 import fs from 'fs';
 import path from 'path';
+import formidable from 'formidable';
 import { stitch, split } from '../core/lib/pincer';
 import config from '../core/config/config.dev';
 
@@ -46,6 +47,33 @@ controller.split = async (req, res) => {
 
   const images = await split({ conf: config.pincer, filename: './temp/8nfb7u96dcg0/final.png', output: './output/', xMin, xMax, yMin, yMax });
   res.json(images);
+};
+
+controller.upload = async (req, res) => {
+    var form = new formidable.IncomingForm();
+    form.parse(req);
+    form.on('fileBegin', function (name, file){
+      file.path = './temp/' + file.name;
+    });
+    form.on('field', (name, field) => {
+      console.log('Field', name, field);
+    });
+    form.on('file', function (name, file){
+      console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
+    });
+    form.on('aborted', (err) => {
+      console.error('Request aborted by user', err);
+      throw err;
+    });
+    form.on('error', (err) => {
+      console.error('Error', err);
+      throw err;
+    });
+    form.on('end', () => {
+      res.json({
+        result: 'Upload Success'
+      });
+    });    
 };
 
 // TODO: Convert to Postgres. Easy, but I'm lazy.

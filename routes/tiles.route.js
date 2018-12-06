@@ -16,12 +16,16 @@ router.get('/seed', (req, res) => {
   tileController.seed(req, res);
 });
 
-router.post('/stitch', function (req, res) {
+router.post('/stitch', (req, res) => {
   tileController.stitch(req, res);
 });
 
-router.post('/split', function (req, res) {
+router.post('/split', (req, res) => {
   tileController.split(req, res);
+});
+
+router.post('/upload', (req, res) => {
+  tileController.upload(req, res);
 });
 
 export default router;
