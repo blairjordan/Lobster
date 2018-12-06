@@ -45,4 +45,14 @@ Tile.removeTile = async (options) => {
   });
 };
 
+Tile.clear = async () => {
+  return db.result(`DELETE FROM tile`)
+  .then(result => {
+    return result.rowCount;
+  })
+  .catch(error => {
+    throw error;
+  });
+};
+
 export default Tile;

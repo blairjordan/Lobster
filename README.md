@@ -169,6 +169,8 @@ Return a list of all offers in the system.
 ### /seed
 **Request type:** GET
 
+Reads all tiles in the assets directory and inserts them into the tile table.
+
 ### /stitch
 **Request type:** POST
 

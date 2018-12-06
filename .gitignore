@@ -33,3 +33,4 @@ log
 # Application
 assets/tiles
 dist
+temp/

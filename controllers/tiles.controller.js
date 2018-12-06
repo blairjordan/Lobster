@@ -76,26 +76,17 @@ controller.upload = async (req, res) => {
     });    
 };
 
-// TODO: Convert to Postgres. Easy, but I'm lazy.
-// This reads everything in the assets dir and inserts it into the DB.
 controller.seed = async (req, res) => {
   const { ext, tilePrefix, separator } = config.pincer.tile;
+  let cleared = await Tile.clear();
+  console.log(cleared);
   fs.readdirSync(config.pincer.tile.path).forEach(f => {
-    
     if (path.extname(f) === ext) {
       let coords = f.replace(tilePrefix,'').replace(ext,'').split(separator);
       if (coords.length > 1) {
         let [x,y] = coords;
-        Tile.findOne({x, y}, (err, tile) => {
-          if (err) { throw err; }
-          if (tile === null) {
-            let newTile = new Tile({x,y});
-            newTile.save((err,tileAdded) => {
-              if (err) { throw err; }
-              console.log(tileAdded);
-            });
-          }
-        });
+        Tile.addTile({x,y});
+        console.log(x,y);
       }
     }
   });
