@@ -86,7 +86,6 @@ controller.seed = async (req, res) => {
       if (coords.length > 1) {
         let [x,y] = coords;
         Tile.addTile({x,y});
-        console.log(x,y);
       }
     }
   });
