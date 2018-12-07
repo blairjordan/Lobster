@@ -24,6 +24,10 @@ router.post('/split', (req, res) => {
   tileController.split(req, res);
 });
 
+router.get('/fill', (req, res) => {
+  tileController.fill(req, res);
+});
+
 router.post('/upload', (req, res) => {
   tileController.upload(req, res);
 });

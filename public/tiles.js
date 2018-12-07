@@ -150,10 +150,10 @@ d3.select(window).on("load", () => {
   d3.json(tilesURI, (t) => loadTiles(t));
 });
 
-$(document).on("click","#upload-btn",function(e){
+$(document).on('click', '#upload-btn', function(e){
   e.preventDefault();
-  var formData = new FormData(this);
-  //formData.append('tiles', [{x: 123, y:4343}, {x: 4554, y: 54353}]);
+  var formData = new FormData($('form')[0]);
+  formData.append('tiles', JSON.stringify(getBody()));
   $.ajax({
       url: $('#upload-form').attr('action'),
       type: 'POST',

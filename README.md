@@ -181,6 +181,14 @@ The final image is currently written to temp/[random ID]/final.png
 ### /split
 **Request type:** POST
 
+
+### /fill
+**Request type:** GET
+
+Fills in missing tiles in your tile directory from your default tile.
+
+Tiles are missing if they are specified in the database, but do not have an associated image file.
+
 ## /players
 
 ### /all

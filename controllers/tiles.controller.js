@@ -79,7 +79,6 @@ controller.upload = async (req, res) => {
 controller.seed = async (req, res) => {
   const { ext, tilePrefix, separator } = config.pincer.tile;
   let cleared = await Tile.clear();
-  console.log(cleared);
   fs.readdirSync(config.pincer.tile.path).forEach(f => {
     if (path.extname(f) === ext) {
       let coords = f.replace(tilePrefix,'').replace(ext,'').split(separator);
@@ -91,5 +90,24 @@ controller.seed = async (req, res) => {
   });
   res.json(req.body);
 };
+
+controller.fill = async (req, res) => {
+  const { ext, tilePrefix, separator, path, notile } = config.pincer.tile;
+  let tiles = await Tile.getAll();
+  let created = [];
+  let d = `${path}/${tilePrefix}${notile}${ext}`;
+  if (fs.existsSync(d)) {
+    tiles.forEach(t => {
+      let p = `${path}/${tilePrefix}${t.x}${separator}${t.y}${ext}`;
+      if (!fs.existsSync(p)) {
+        fs.copyFileSync(d, p);
+        created.push(p);
+      }
+    });
+  } else {
+      res.status(500).json("Unable to locate default tile.");
+  }
+  res.json(created);
+}
 
 export default controller;

@@ -108,7 +108,6 @@ const stitch = async options => {
 };
 
 const split = async options => {
-  
   const {conf,filename,xMin,xMax,yMin,yMax} = options;
   const {width, height, tilePrefix, ext, separator} = conf.tile;
 
