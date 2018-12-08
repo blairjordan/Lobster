@@ -3,7 +3,7 @@ import logger from '../core/logger/app-logger';
 import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
-import { stitch, split } from '../core/lib/pincer';
+import { stitch, split, size } from '../core/lib/pincer';
 import config from '../core/config/config.dev';
 
 const controller = {};
@@ -45,21 +45,37 @@ controller.split = async (req, res) => {
     Math.max.apply(null, tiles.map(t => t.y))
   ];
 
-  const images = await split({ conf: config.pincer, filename: './temp/8nfb7u96dcg0/final.png', output: './output/', xMin, xMax, yMin, yMax });
+  const images = await split({ conf: config.pincer, filepath: './temp/8nfb7u96dcg0/final.png', output: './output/', xMin, xMax, yMin, yMax });
   res.json(images);
 };
 
 controller.upload = async (req, res) => {
     var form = new formidable.IncomingForm();
+    var fields = [];
     form.parse(req);
     form.on('fileBegin', function (name, file){
       file.path = './temp/' + file.name;
     });
     form.on('field', (name, field) => {
       console.log('Field', name, field);
+      fields.push(field);
     });
     form.on('file', function (name, file){
       console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
+      size({filepath: file.path}).then((s) => {
+        let field = JSON.parse(fields[0]).size;
+        let [expectedW, expectedH]= 
+        [
+          field.width * config.pincer.tile.width,
+          field.height * config.pincer.tile.height
+        ];
+        if (field.width !== expectedW) {
+          //res.status(500).json(`Width error: ${s.width} !== ${expectedW}`);
+        }
+        if (field.height !== expectedH) {
+          //res.status(500).json(`Height error: ${s.height} !== ${expectedH}`);
+        }
+      });
     });
     form.on('aborted', (err) => {
       console.error('Request aborted by user', err);

@@ -107,9 +107,19 @@ const stitch = async options => {
   });
 };
 
+const size = options => {
+  console.log(options.filepath);
+  return new Promise(resolve => {
+    gm(options.filepath).size(function(err, m){
+      if (err) { throw err; }
+      resolve(m);
+    });
+  });
+}
+
 const split = async options => {
-  const {conf,filename,xMin,xMax,yMin,yMax} = options;
-  const {width, height, tilePrefix, ext, separator} = conf.tile;
+  const {conf,filepath,xMin,xMax,yMin,yMax} = options;
+  const {width,height,tilePrefix,ext,separator} = conf.tile;
 
   let [wTileSpan, hTileSpan] = [xMax - (xMin-1), yMax - (yMin-1)];
   let tileNames = [];
@@ -128,7 +138,7 @@ const split = async options => {
       let output = `${temp}/${fname}`;
       promises.push(
         new Promise(resolve =>
-          gm(`${filename}`).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
+          gm(`${filepath}`).crop(segmentSizeW, segmentSizeH, offsetW, offsetH)
           .write(`${temp}/${fname}`, function (err) {
             if (err) { console.log(err); return; }
             tileNames.push({ filename: fname, path: output, segmentSizeW, segmentSizeH, offsetW, offsetH });
@@ -146,7 +156,7 @@ const split = async options => {
   });
 };
 
-module.exports = {stitch, split};
+module.exports = {stitch, split, size};
 
 /*
 let input = 'grid.png';
