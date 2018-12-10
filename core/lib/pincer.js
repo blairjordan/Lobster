@@ -38,13 +38,10 @@ const panel = async (conf,input,width,height,temp,label,cb) => {
 const combine = async (conf,temp,width,height) => {
   let found = [];
   
-  console.log(temp);
-  console.log(fs.readdirSync(temp));
   fs.readdirSync(temp).forEach(file => {
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
   });
   
-  console.log(found);
   let sorted = found.sort((a,b) => (a.idx < b.idx) ? 1 : ((b.idx > a.idx) ? -1 : 0));
 
   if (sorted.length > 1) {
@@ -68,7 +65,6 @@ const stitch = async options => {
   const {tiles, conf, size} = options;
   const {xMin,xMax,yMin,yMax} = size;
   const {path,tilePrefix,ext,notile,separator} = conf.tile;
-  
   const [totalWidth,totalHeight] = [size.width * conf.tile.width, size.height * conf.tile.height];
 
   let temp = tempDir(conf);
@@ -81,13 +77,11 @@ const stitch = async options => {
       if (tile) {
         let fpath = `${path}/${tilePrefix||'Tile_'}${x}${separator||'x'}${y}${ext||'.png'}`;
         let dpath = `${path}/${tilePrefix||'Tile_'}${notile}${ext||'.png'}`;
-        
         if (fs.existsSync(fpath)) {
           ptiles.push(fpath);
         } else {
           ptiles.push(dpath);
         }
-        
       } else {
         ptiles.push('NULL:');
       }
@@ -108,7 +102,6 @@ const stitch = async options => {
 };
 
 const size = options => {
-  console.log(options.filepath);
   return new Promise(resolve => {
     gm(options.filepath).size(function(err, m){
       if (err) { throw err; }
@@ -157,25 +150,38 @@ const split = async options => {
   });
 };
 
-module.exports = {stitch, split, size};
+const replace = async options => {
+  const {conf,filepath} = options;
 
-/*
-let input = 'grid.png';
-gm(input).size(function(err, meta){
-  const {width, height} = meta;
-  if (err) { console.log(err); return; }
-
-  let tiles = split({
-    input,
-    segmentCount: 16,
-    prefix: 'Tile_',
-    ext: 'png',
-    output: "./output",
-    width,
-    height,
-    seperator: '_'
-  }).then(tiles => {
-    console.log(tiles);
+  let s = await size({filepath});
+  let [expectedW, expectedH] =
+    [
+      options.size.width * conf.tile.width,
+      options.size.height * conf.tile.height
+    ];
+  let errors = [];
+  if (s.width !== expectedW) {
+    errors.push(`Image width: ${s.width} != expected ${expectedW} (${options.size.width} selected * ${conf.tile.width} tile config)`);
+  }
+  if (s.height !== expectedH) {
+    errors.push(`Image height: ${s.height} != expected ${expectedH} (${options.size.height} selected * ${conf.tile.height} tile config)`);
+  }
+  
+  return new Promise(async (resolve, reject) => {
+    if (errors.length) {
+      reject(errors);
+    } else {
+      const images = await split({ conf, filepath, size: options.size });
+      images.forEach(f => {
+        // TODO: Filter out blank selection!
+        fs.copyFile(f.path, `${conf.tile.path}/${f.filename}`, (err) => {
+          if (err) reject(err);
+          console.log(`${f.path} was copied to ${f.filename}`);
+        });
+      });
+      resolve(images);
+    }
   });
-});
-*/
+};
+
+module.exports = {stitch, split, size, replace};

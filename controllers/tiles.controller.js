@@ -3,7 +3,7 @@ import logger from '../core/logger/app-logger';
 import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
-import { stitch, split, size } from '../core/lib/pincer';
+import { stitch, split, replace } from '../core/lib/pincer';
 import config from '../core/config/config.dev';
 
 const controller = {};
@@ -35,7 +35,7 @@ controller.stitch = (req, res) => {
 };
 
 controller.split = async (req, res) => {
-  const { tiles } = req.body;
+  const { tiles, filepath } = req.body;
 
   const [xMin, xMax, yMin, yMax] = 
   [
@@ -45,7 +45,7 @@ controller.split = async (req, res) => {
     Math.max.apply(null, tiles.map(t => t.y))
   ];
 
-  const images = await split({ conf: config.pincer, filepath: './temp/final.png', size: {xMin, xMax, yMin, yMax }});
+  const images = await split({ conf: config.pincer, filepath, size: {xMin, xMax, yMin, yMax }});
   res.json(images);
 };
 
@@ -60,37 +60,17 @@ controller.upload = async (req, res) => {
       console.log('Field', name, field);
       fields.push(field);
     });
-    form.on('file', (name, file) => {
-      console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
-      size({filepath: file.path}).then(async s => {
-        let size = JSON.parse(fields[0]).size;
-        let tiles = JSON.parse(fields[0]).tiles;
-        let [expectedW, expectedH] =
-        [
-          size.width * config.pincer.tile.width,
-          size.height * config.pincer.tile.height
-        ];
-        let errors = [];
-        if (s.width !== expectedW) {
-          errors.push(`Image width: ${s.width} != expected ${expectedW} (${size.width} selected * ${config.pincer.tile.width} tile config)`);
-        }
-        if (s.height !== expectedH) {
-          errors.push(`Image height: ${s.height} != expected ${expectedH} (${size.height} selected * ${config.pincer.tile.height} tile config)`);
-        }
-        if (errors.length) {
-          res.status(400).json({errors});
-        } else {
-          const images = await split({ conf: config.pincer, filepath: file.path, size });
-          images.forEach(f => {
-            // TODO: Filter out blank selection!
-            fs.copyFile(f.path, `${config.pincer.tile.path}/${f.filename}`, (err) => {
-              if (err) throw err;
-              console.log(`${f.path} was copied to ${f.filename}`);
-            });
-          })
-          res.json(images);
-        }
-      });
+    form.on('file', async (name, file) => {
+      let field = JSON.parse(fields[0]);
+      let size = field.size;
+      let tiles = field.tiles;
+      try {
+        let images = await replace({tiles, size, filepath: file.path, conf: config.pincer});
+        res.json(images);
+      } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
+      }
     });
     form.on('aborted', () => {
       console.error('Request aborted by user');
