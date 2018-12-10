@@ -45,7 +45,7 @@ controller.split = async (req, res) => {
     Math.max.apply(null, tiles.map(t => t.y))
   ];
 
-  const images = await split({ conf: config.pincer, filepath: './temp/8nfb7u96dcg0/final.png', output: './output/', xMin, xMax, yMin, yMax });
+  const images = await split({ conf: config.pincer, filepath: './temp/final.png', xMin, xMax, yMin, yMax });
   res.json(images);
 };
 
@@ -77,15 +77,14 @@ controller.upload = async (req, res) => {
           errors.push(`Image height: ${s.height} != expected ${expectedH} (${field.height} selected * ${config.pincer.tile.height} tile config)`);
         }
         if (errors.length) {
-          res.status(400).json(errors);
+          res.status(400).json({errors});
         } else {
           res.json('Upload successful');
         }
       });
     });
-    form.on('aborted', (err) => {
-      console.error('Request aborted by user', err);
-      throw err;
+    form.on('aborted', () => {
+      console.error('Request aborted by user' );
     });
     form.on('error', (err) => {
       console.error('Error', err);

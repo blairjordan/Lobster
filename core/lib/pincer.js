@@ -115,7 +115,7 @@ const size = options => {
       resolve(m);
     });
   });
-}
+};
 
 const split = async options => {
   const {conf,filepath,xMin,xMax,yMin,yMax} = options;
