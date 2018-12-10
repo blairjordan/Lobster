@@ -50,8 +50,8 @@ controller.split = async (req, res) => {
 };
 
 controller.upload = async (req, res) => {
-    var form = new formidable.IncomingForm();
-    var fields = [];
+    let form = new formidable.IncomingForm();
+    let fields = [];
     form.parse(req);
     form.on('fileBegin', function (name, file){
       file.path = './temp/' + file.name;
@@ -63,28 +63,31 @@ controller.upload = async (req, res) => {
     form.on('file', function (name, file){
       console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
       size({filepath: file.path}).then(s => {
-        let field = JSON.parse(fields[0]).size;
-        let [expectedW, expectedH]= 
+        let size = JSON.parse(fields[0]).size;
+        let tiles = JSON.parse(fields[0]).tiles;
+        let [expectedW, expectedH] =
         [
-          field.width * config.pincer.tile.width,
-          field.height * config.pincer.tile.height
+          size.width * config.pincer.tile.width,
+          size.height * config.pincer.tile.height
         ];
         let errors = [];
         if (s.width !== expectedW) {
-          errors.push(`Image width: ${s.width} != expected ${expectedW} (${field.width} selected * ${config.pincer.tile.width} tile config)`);
+          errors.push(`Image width: ${s.width} != expected ${expectedW} (${size.width} selected * ${config.pincer.tile.width} tile config)`);
         }
         if (s.height !== expectedH) {
-          errors.push(`Image height: ${s.height} != expected ${expectedH} (${field.height} selected * ${config.pincer.tile.height} tile config)`);
+          errors.push(`Image height: ${s.height} != expected ${expectedH} (${size.height} selected * ${config.pincer.tile.height} tile config)`);
         }
         if (errors.length) {
           res.status(400).json({errors});
         } else {
+          //const {xMin, xMax, yMin, yMax} = size;
+          //split({ conf: config.pincer, filepath: file.path, xMin, xMax, yMin, yMax });
           res.json('Upload successful');
         }
       });
     });
     form.on('aborted', () => {
-      console.error('Request aborted by user' );
+      console.error('Request aborted by user');
     });
     form.on('error', (err) => {
       console.error('Error', err);

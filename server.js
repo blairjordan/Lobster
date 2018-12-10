@@ -30,7 +30,6 @@ const app = express();
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev", { "stream": logger.stream }));
 app.use(express.static(__dirname + '/public' ));
@@ -46,12 +45,12 @@ app.get('/', function (req, res) {
     res.render('index', { title: 'Lobster', message: 'Welcome to Lobster!' });
 });
 
-http.createServer(
+let server = http.createServer(
 /*{
     key: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/privkey.pem'),
     cert: fs.readFileSync('/etc/letsencrypt/live/dev.pegleg.com.au/cert.pem')
 },*/
- app).listen(port, () => {
+    app).setTimeout(10*60*1000).listen(port, () => {
     logger.info('server started - ', port);
 });
 
