@@ -82,6 +82,7 @@ controller.upload = async (req, res) => {
         } else {
           const images = await split({ conf: config.pincer, filepath: file.path, size });
           images.forEach(f => {
+            // TODO: Filter out blank selection!
             fs.copyFile(f.path, `${config.pincer.tile.path}/${f.filename}`, (err) => {
               if (err) throw err;
               console.log(`${f.path} was copied to ${f.filename}`);
