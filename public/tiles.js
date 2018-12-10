@@ -153,7 +153,7 @@ d3.select(window).on("load", () => {
 $(document).on('click', '#upload-btn', function(e){
   e.preventDefault();
   var formData = new FormData($('form')[0]);
-  formData.prepend('tiles', JSON.stringify(getBody()));
+  formData.append('tiles', JSON.stringify(getBody()));
   $.ajax({
       url: $('#upload-form').attr('action'),
       type: 'POST',

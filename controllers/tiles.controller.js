@@ -62,18 +62,24 @@ controller.upload = async (req, res) => {
     });
     form.on('file', function (name, file){
       console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
-      size({filepath: file.path}).then((s) => {
+      size({filepath: file.path}).then(s => {
         let field = JSON.parse(fields[0]).size;
         let [expectedW, expectedH]= 
         [
           field.width * config.pincer.tile.width,
           field.height * config.pincer.tile.height
         ];
-        if (field.width !== expectedW) {
-          //res.status(500).json(`Width error: ${s.width} !== ${expectedW}`);
+        let errors = [];
+        if (s.width !== expectedW) {
+          errors.push(`Image width: ${s.width} != expected ${expectedW} (${field.width} selected * ${config.pincer.tile.width} tile config)`);
         }
-        if (field.height !== expectedH) {
-          //res.status(500).json(`Height error: ${s.height} !== ${expectedH}`);
+        if (s.height !== expectedH) {
+          errors.push(`Image height: ${s.height} != expected ${expectedH} (${field.height} selected * ${config.pincer.tile.height} tile config)`);
+        }
+        if (errors.length) {
+          res.status(400).json(errors);
+        } else {
+          res.json('Upload successful');
         }
       });
     });
@@ -85,11 +91,7 @@ controller.upload = async (req, res) => {
       console.error('Error', err);
       throw err;
     });
-    form.on('end', () => {
-      res.json({
-        result: 'Upload Success'
-      });
-    });    
+    form.on('end', () => {} );    
 };
 
 controller.seed = async (req, res) => {
