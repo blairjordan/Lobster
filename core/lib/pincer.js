@@ -118,7 +118,8 @@ const size = options => {
 };
 
 const split = async options => {
-  const {conf,filepath,xMin,xMax,yMin,yMax} = options;
+  const {conf,filepath,size} = options;
+  const {xMin, xMax, yMin, yMax} = size;
   const {width,height,tilePrefix,ext,separator} = conf.tile;
 
   let [wTileSpan, hTileSpan] = [xMax - (xMin-1), yMax - (yMin-1)];

@@ -45,7 +45,7 @@ controller.split = async (req, res) => {
     Math.max.apply(null, tiles.map(t => t.y))
   ];
 
-  const images = await split({ conf: config.pincer, filepath: './temp/final.png', xMin, xMax, yMin, yMax });
+  const images = await split({ conf: config.pincer, filepath: './temp/final.png', size: {xMin, xMax, yMin, yMax }});
   res.json(images);
 };
 
@@ -60,9 +60,9 @@ controller.upload = async (req, res) => {
       console.log('Field', name, field);
       fields.push(field);
     });
-    form.on('file', function (name, file){
+    form.on('file', (name, file) => {
       console.log(`Uploaded ${file.name} (${file.type}) to ${file.path} - ${Math.round((file.size/1024)*100)/100}MB`);
-      size({filepath: file.path}).then(s => {
+      size({filepath: file.path}).then(async s => {
         let size = JSON.parse(fields[0]).size;
         let tiles = JSON.parse(fields[0]).tiles;
         let [expectedW, expectedH] =
@@ -80,9 +80,14 @@ controller.upload = async (req, res) => {
         if (errors.length) {
           res.status(400).json({errors});
         } else {
-          //const {xMin, xMax, yMin, yMax} = size;
-          //split({ conf: config.pincer, filepath: file.path, xMin, xMax, yMin, yMax });
-          res.json('Upload successful');
+          const images = await split({ conf: config.pincer, filepath: file.path, size });
+          images.forEach(f => {
+            fs.copyFile(f.path, `${config.pincer.tile.path}/${f.filename}`, (err) => {
+              if (err) throw err;
+              console.log(`${f.path} was copied to ${f.filename}`);
+            });
+          })
+          res.json(images);
         }
       });
     });
