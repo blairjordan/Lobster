@@ -54,7 +54,7 @@ controller.upload = async (req, res) => {
     let fields = [];
     form.parse(req);
     form.on('fileBegin', function (name, file){
-      file.path = './temp/' + file.name;
+      file.path = `${config.pincer.temp}/${path.basename(file.path)}${path.extname(file.name)}`;
     });
     form.on('field', (name, field) => {
       console.log('Field', name, field);
