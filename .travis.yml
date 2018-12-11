@@ -5,6 +5,6 @@ node_js:
 services:
   - postgresql
 before_script:
-  - psql -c 'create database lobster;' -U lobster
+  - psql -c 'create database lobster;' -U postgres
   - psql -d lobster -a -f ./scripts/create_schema.sql # Remove DROP statements ... CREATE IF NOT EXISTS 
   - psql -d lobster -a -f ./scripts/seed_db.sql # Need to build these into tests. Remove dependency on this 
