@@ -9,7 +9,7 @@
     "copy": "cp -R ./public dist",
     "clean": "rm -rf dist && mkdir dist",
     "serve": "node dist/server.js",
-    "test": "nodemon --exec \"mocha --timeout 10000 --require babel-core/register --require babel-polyfill\"",
+    "test": "mocha --timeout 10000 --require babel-core/register --require babel-polyfill --exit",
     "lint": "eslint ."
   },
   "repository": {
