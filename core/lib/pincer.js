@@ -44,12 +44,13 @@ const combine = async (conf,temp,width,height) => {
   
   let sorted = found.sort((a,b) => (a.idx < b.idx) ? 1 : ((b.idx > a.idx) ? -1 : 0));
 
+  console.log(sorted);
   if (sorted.length > 1) {
     let gen = gm()
     .tile(`1x${sorted.length}`)
     .geometry(`${width}+${height}+0+0`);
     
-    for (let i = sorted.length-1; i >= 0; i--) {
+    for (let i = 0; i < sorted.length; i++) {
       gen = gen.montage(sorted[i].path);
     }
     
