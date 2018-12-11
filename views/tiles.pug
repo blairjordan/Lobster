@@ -6,16 +6,17 @@ html
       style
         include tiles.css
     body
-      | <span class="buttons">
-      |   <button class="reset">Reset</button>
-      |   <button class="stitch">Stitch Template</button>
-      |   <button class="split">Split Template</button>
-      | </span>
 
       | <form method="POST" id="upload-form" action="/tiles/upload" enctype="multipart/form-data">
       |   <input type="file" name="tile" />
       |   <input id="upload-btn" class="upload" type="submit" value="Upload" />
       | </form>
+
+      | <span class="buttons">
+      |   <button class="reset">Reset</button>
+      |   <button class="stitch">Stitch Template</button>
+      |   <button class="split">Split Template</button>
+      | </span>
 
       | <svg width="960" height="500">
       | </svg>

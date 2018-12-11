@@ -57,7 +57,6 @@ controller.upload = async (req, res) => {
       file.path = `${config.pincer.temp}/${path.basename(file.path)}${path.extname(file.name)}`;
     });
     form.on('field', (name, field) => {
-      console.log('Field', name, field);
       fields.push(field);
     });
     form.on('file', async (name, file) => {
@@ -114,6 +113,6 @@ controller.fill = async (req, res) => {
       res.status(500).json("Unable to locate default tile.");
   }
   res.json(created);
-}
+};
 
 export default controller;

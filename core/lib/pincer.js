@@ -49,7 +49,7 @@ const combine = async (conf,temp,width,height) => {
     .tile(`1x${sorted.length}`)
     .geometry(`${width}+${height}+0+0`);
     
-    for (let i = 0; i < sorted.length; i++) {
+    for (let i = sorted.length-1; i >= 0; i--) {
       gen = gen.montage(sorted[i].path);
     }
     
@@ -151,7 +151,8 @@ const split = async options => {
 };
 
 const replace = async options => {
-  const {conf,filepath} = options;
+  const {conf,filepath,tiles} = options;
+  const {tilePrefix,ext,separator} = conf.tile;
 
   let s = await size({filepath});
   let [expectedW, expectedH] =
@@ -172,8 +173,14 @@ const replace = async options => {
       reject(errors);
     } else {
       const images = await split({ conf, filepath, size: options.size });
-      images.forEach(f => {
-        // TODO: Filter out blank selection!
+      let selected = images.reduce((prev, curr) => {
+        if (tiles.filter(t => (`${tilePrefix||'Tile_'}${t.x}${separator||'x'}${t.y}${ext||'.png'}` === curr.filename)).length) {
+          prev.push(curr);
+        }
+        return prev;
+      }, []);
+
+      selected.forEach(f => {
         fs.copyFile(f.path, `${conf.tile.path}/${f.filename}`, (err) => {
           if (err) reject(err);
           console.log(`${f.path} was copied to ${f.filename}`);
