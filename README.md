@@ -1,4 +1,5 @@
 # Lobster
+[![Build Status](https://travis-ci.com/blairjordan/Lobster.svg?token=PPcSQGRsmsjbq7pszMqm&branch=master)](https://travis-ci.com/blairjordan/Lobster)
 
 https://lobster.herokuapp.com
 
