@@ -39,19 +39,20 @@ const combine = async (conf,temp,width,height) => {
   let found = [];
   
   fs.readdirSync(temp).forEach(file => {
+    console.log(file.replace(conf.tile.ext,''));
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
   });
   
-  let sorted = found.sort((a,b) => (a.idx < b.idx) ? 1 : ((b.idx > a.idx) ? -1 : 0));
+  found.sort((a,b) => (b.idx - a.idx));
 
-  console.log(sorted);
-  if (sorted.length > 1) {
+  console.log(found);
+  if (found.length > 1) {
     let gen = gm()
-    .tile(`1x${sorted.length}`)
+    .tile(`1x${found.length}`)
     .geometry(`${width}+${height}+0+0`);
     
-    for (let i = 0; i < sorted.length; i++) {
-      gen = gen.montage(sorted[i].path);
+    for (let i = 0; i < found.length; i++) {
+      gen = gen.montage(found[i].path);
     }
     
     gen.write(`${temp}/final.png`, function(err) {
