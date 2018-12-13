@@ -39,13 +39,10 @@ const combine = async (conf,temp,width,height) => {
   let found = [];
   
   fs.readdirSync(temp).forEach(file => {
-    console.log(file.replace(conf.tile.ext,''));
     found.push({path:`${temp}/${file}`, idx: parseInt(file.replace(conf.tile.ext,''))});
   });
-  
   found.sort((a,b) => (b.idx - a.idx));
 
-  console.log(found);
   if (found.length > 1) {
     let gen = gm()
     .tile(`1x${found.length}`)
